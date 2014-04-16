@@ -4,9 +4,6 @@
 # configurations
 *.cnf
 
-# .req
-*.req
-
 # sensible information
 sensible.py
 
