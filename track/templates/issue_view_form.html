@@ -1,0 +1,41 @@
+{% extends "admin/change_form.html" %}
+{% block after_field_sets %}
+{% if adminform.form.instance.id %}
+    {% if not adminform.form.instance.is_closed %}
+    <fieldset class="module aligned first">
+      <div class="control-group form-row field-nota ">
+          <div><div class="control-label"><label class="required" for="id_nota">Nota:</label></div><div class="controls"><textarea class="vLargeTextField" cols="40" id="id_nota" name="nota" rows="10" style="width: 90%;"></textarea></div></div>
+      </div>
+      <div class="control-group form-row field-like ">
+          <div><div class="control-label"><label class="vCheckboxLabel" for="id_like">Like</label></div><div class="controls"><input id="id_like" name="like" type="checkbox"></div></div>
+      </div>
+    </fieldset>
+    {% endif %}
+    <hr/>
+    <div id="notas">
+    {% for issue_nota in adminform.form.instance.get_notas %}
+    <fieldset class="module aligned first" >
+        <div class="control-group form-row field-modulo ">        
+            <div>
+                <div class="control-label">
+                    <label>Created by:</label>
+                </div>
+                <div class="controls">
+                    <span class="readonly">{{ issue_nota.created_by.username }}</span>
+                </div>
+            </div>
+            <div>
+                <div class="control-label">
+                    <label>Nota:</label>
+                </div>
+                <div class="controls">
+                    <span class="readonly">{{ issue_nota.nota }}</span>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}
+

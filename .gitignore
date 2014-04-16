@@ -1,0 +1,21 @@
+# pyc
+*.pyc
+
+# configurations
+*.cnf
+
+# .req
+*.req
+
+# sensible information
+sensible.py
+
+# sublime
+*.sublime-workspace
+*.sublime-project
+
+# static
+static/*
+
+# documents
+media/documents/
