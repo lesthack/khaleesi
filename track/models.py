@@ -35,7 +35,7 @@ class modulo(models.Model):
     deleted_at = models.DateTimeField(blank=True, null=True, default=None)
 
     def __unicode__(self):
-        return self.modulo
+        return '{0}->{1}'.format(self.proyecto, self.modulo)
 
     def proyecto_link(self):
         return format_html('<a href="/admin/track/proyecto/{0}/">{1}</a>', self.proyecto.id, self.proyecto)
