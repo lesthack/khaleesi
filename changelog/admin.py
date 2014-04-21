@@ -3,6 +3,8 @@ from django import forms
 from django.contrib import admin
 from changelog.models import *
 from suit_redactor.widgets import RedactorWidget
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
 import datetime
 
 class tipo_datoForm(forms.ModelForm):
@@ -52,10 +54,10 @@ class objetoForm(forms.ModelForm):
         self.fields['nota'].required = False
 
 class objetoAdmin(admin.ModelAdmin):
-    list_display = ['relacion_objeto','objeto', 'tipo', 'tipo_dato', 'created_at', 'updated_at', 'created_by', 'deleted']
+    list_display = ['objeto', 'relacion_objeto_link', 'tipo_objeto_link', 'tipo_dato_link', 'created_by_link', 'created_at', 'updated_at', 'deleted']
     list_display_links = ['objeto']
     search_fields = ['objeto', 'tipo__tipo', 'tipo_dato__dato', 'created_by__username']
-    list_filter = ['tipo', 'created_at', 'updated_at']
+    list_filter = ['tipo', 'relacion_objeto', 'created_at', 'updated_at']
     ordering = ['-created_at']
     form = objetoForm
     fieldsets = [
@@ -113,6 +115,9 @@ class objetoAdmin(admin.ModelAdmin):
             obj.deleted_at = None
         
         obj.save()
+    
+    def response_add(self, request, obj, post_url_continue=None):
+        return HttpResponseRedirect(reverse("admin:changelog_cambio_changelist"))
 
     def delete_model(self, request, obj):
         nuevo_cambio = cambio(objeto=obj, tipo_id=3)
@@ -126,6 +131,12 @@ class objetoAdmin(admin.ModelAdmin):
         obj.save()
 
         return False
+    
+    def suit_row_attributes(self, obj, request):
+        if obj.deleted:
+            row_class = 'error'
+            return {'class': row_class, 'data': obj.tipo.id}
+        return None
 
 class tipo_cambioForm(forms.ModelForm):
     class Meta:
@@ -149,10 +160,10 @@ class cambioForm(forms.ModelForm):
         model = cambio
 
 class cambioAdmin(admin.ModelAdmin):
-    list_display = ['objeto', 'tipo', 'get_objeto_cambio', 'nota_corta', 'created_by', 'created_at', 'updated_at']
-    list_display_links = ['objeto']
-    search_fields = ['objeto', 'tipo', 'created_by__username']
-    list_filter = ['tipo', 'created_at', 'updated_at']
+    list_display = ['id', 'objeto_link', 'tipo_link', 'get_objeto_cambio', 'nota_corta', 'created_by_link', 'created_at', 'updated_at']
+    list_display_links = ['id']
+    search_fields = ['objeto__objeto', 'tipo__tipo', 'created_by__username', 'objeto__relacion_objeto__objeto']
+    list_filter = ['objeto', 'tipo', 'created_by', 'created_at', 'updated_at']
     readonly_fields = ['objeto', 'tipo', 'nota', 'created_by', 'created_at', 'updated_at']
     form = cambioForm
 
@@ -167,6 +178,10 @@ class cambioAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         pass
+    
+    def suit_row_attributes(self, obj, request):
+        COLORS = ('info', 'success', 'warning', 'error')
+        return {'class': COLORS[obj.tipo.id], 'data': obj.tipo.id}
 
 admin.site.register(tipo_dato, tipo_datoAdmin)
 admin.site.register(tipo_objeto, tipo_objetoAdmin)
