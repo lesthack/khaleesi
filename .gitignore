@@ -16,3 +16,6 @@ static/*
 
 # documents
 media/documents/
+
+# migrations
+*/migrations/*
