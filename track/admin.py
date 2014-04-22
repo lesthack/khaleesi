@@ -127,6 +127,7 @@ class issueAdmin(admin.ModelAdmin):
     search_fields = ['id', 'modulo__proyecto__proyecto', 'modulo__modulo', 'tipo_issue__tipo', 'status', 'urgencia', 'importancia', 'asignado_a__username', 'created_by__username', 'updated_by__username']
     ordering = ['status', '-urgencia','-importancia','-created_at']
     list_filter = ['modulo__proyecto__proyecto', 'modulo__modulo', 'status', 'urgencia', 'importancia', 'asignado_a', 'created_by', 'created_at']
+    list_per_page = 10
     form = issueForm
     
     def get_readonly_fields(self, request, obj=None):
