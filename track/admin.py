@@ -18,10 +18,10 @@ class proyectoAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
-            if not request.user.is_superuser:
+            if request.user.is_superuser or obj.created_by==request.user:
+                self.exclude = ['created_by', 'deleted_by', 'deleted_at', 'deleted']
+            elif not request.user.is_superuser:
                 return self.readonly_fields + ('proyecto', 'descripcion', 'link', 'created_by', 'created_at', 'deleted', 'deleted_at', 'deleted_by')
-            if request.user.is_superuser:
-                self.exclude = ['created_by', 'deleted_by', 'deleted_at']
         return self.readonly_fields
 
     def save_model(self, request, obj, form, change):
@@ -133,16 +133,19 @@ class issueAdmin(admin.ModelAdmin):
         if obj and not request.user.is_superuser:
             self.actions = None
             self.exclude = []
-            if obj.created_by == request.user:
-                readonly_fields = ('id', 'modulo', 'updated_by', 'created_at', 'updated_at', 'created_by')
-            else:
-                readonly_fields = ('id', 'modulo', 'tipo_issue', 'urgencia', 'importancia', 'descripcion', 'asignado_a', 'link', 'updated_by', 'created_at', 'updated_at', 'created_by')
-            if obj.is_closed:
-                readonly_fields = tuple(list(readonly_fields) + ['status'])
+            readonly_fields = ()
+
+            if obj.asignado_a  == request.user:
+                readonly_fields = ('id', 'modulo', 'tipo_issue', 'updated_by', 'created_at', 'updated_at', 'created_by', 'urgencia', 'importancia', 'descripcion', 'asignado_a', 'link')
+                if obj.is_closed():
+                    readonly_fields = tuple(list(readonly_fields) + ['status'])
+            else:        
+                readonly_fields = ('id', 'modulo', 'tipo_issue', 'updated_by', 'created_at', 'updated_at', 'created_by', 'urgencia', 'importancia', 'descripcion', 'asignado_a', 'link', 'status')
+
             return self.readonly_fields + readonly_fields
         elif obj and request.user.is_superuser:
             self.exclude = []
-            if not obj.is_closed:
+            if not obj.is_closed():
                 return self.readonly_fields + ('id', 'created_at', 'updated_at')
             else:
                 readonly_fields = ('id', 'modulo', 'tipo_issue', 'urgencia', 'importancia', 'descripcion', 'asignado_a', 'link', 'updated_by', 'created_at', 'updated_at', 'created_by')

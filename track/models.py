@@ -108,7 +108,7 @@ class issue(models.Model):
     proyecto_link.admin_order_field = 'modulo__proyecto'
 
     def modulo_link(self):
-        return format_html('<a href="/admin/track/modulo/{0}/">{1}</a>', self.modulo.id, self.modulo)
+        return format_html('<a href="/admin/track/modulo/{0}/">{1}</a>', self.modulo.id, self.modulo.modulo)
     modulo_link.short_description = 'Modulo'
     modulo_link.allow_tags = True
     modulo_link.admin_order_field = 'modulo'
