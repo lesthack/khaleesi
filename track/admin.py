@@ -122,7 +122,7 @@ class issueForm(forms.ModelForm):
         exclude = ['updated_by', 'created_by', 'created_at', 'updated_at', 'status']
 
 class issueAdmin(admin.ModelAdmin):
-    list_display = ['id', 'proyecto_link', 'modulo_link', 'tipo_issue', 'status', 'urgencia', 'importancia', 'asignado_a', 'created_by', 'created_at']
+    list_display = ['id', 'proyecto_link', 'modulo_link', 'tipo_issue', 'status', 'urgencia', 'importancia', 'descripcion', 'asignado_a', 'created_by', 'created_at']
     list_display_links = ['id']
     search_fields = ['id', 'modulo__proyecto__proyecto', 'modulo__modulo', 'tipo_issue__tipo', 'status', 'urgencia', 'importancia', 'asignado_a__username', 'created_by__username', 'updated_by__username']
     ordering = ['status', '-urgencia','-importancia','-created_at']
