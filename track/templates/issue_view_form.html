@@ -1,10 +1,81 @@
 {% extends "admin/change_form.html" %}
 {% block after_field_sets %}
+<script src="/static/wysihtml5/parser_rules/advanced.js"></script>
+<script src="/static/wysihtml5/dist/wysihtml5-0.3.0.min.js"></script>
+<style>
+  .wysihtml5-command-active {
+    font-weight: bold;
+  }
+  
+  [data-wysihtml5-dialog] {
+    margin: 5px 0 0;
+    padding: 5px;
+    border: 1px solid #666;
+  }
+  
+  a[data-wysihtml5-command-value="red"] {
+    color: red;
+  }
+  
+  a[data-wysihtml5-command-value="green"] {
+    color: green;
+  }
+  
+  a[data-wysihtml5-command-value="blue"] {
+    color: blue;
+  }
+</style>
 {% if adminform.form.instance.id %}
     {% if not adminform.form.instance.is_closed %}
     <fieldset class="module aligned first">
       <div class="control-group form-row field-nota ">
-          <div><div class="control-label"><label class="required" for="id_nota">Nota:</label></div><div class="controls"><textarea class="vLargeTextField" cols="40" id="id_nota" name="nota" rows="10" style="width: 90%;"></textarea></div></div>
+        <div>
+            <div class="control-label">
+                <label class="required" for="id_nota">Nota:</label>
+            </div>
+            <div class="controls">
+                <div id="toolbar" style="display: none;">
+                    <a data-wysihtml5-command="bold" title="CTRL+B">bold</a> |
+                    <a data-wysihtml5-command="italic" title="CTRL+I">italic</a> |
+                    <a data-wysihtml5-command="createLink">insert link</a> |
+                    <a data-wysihtml5-command="insertImage">insert image</a> |
+                    <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1">h1</a> |
+                    <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2">h2</a> |
+                    <a data-wysihtml5-command="insertUnorderedList">insertUnorderedList</a> |
+                    <a data-wysihtml5-command="insertOrderedList">insertOrderedList</a> |
+                    <a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="red">red</a> |
+                    <a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="green">green</a> |
+                    <a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="blue">blue</a> |
+                    <a data-wysihtml5-command="insertSpeech">speech</a>
+                    <a data-wysihtml5-action="change_view">switch to html view</a>
+                    
+                    <div data-wysihtml5-dialog="createLink" style="display: none;">
+                      <label>
+                        Link:
+                        <input data-wysihtml5-dialog-field="href" value="http://">
+                      </label>
+                      <a data-wysihtml5-dialog-action="save">OK</a>&nbsp;<a data-wysihtml5-dialog-action="cancel">Cancel</a>
+                    </div>
+                    
+                    <div data-wysihtml5-dialog="insertImage" style="display: none;">
+                      <label>
+                        Image:
+                        <input data-wysihtml5-dialog-field="src" value="http://">
+                      </label>
+                      <label>
+                        Align:
+                        <select data-wysihtml5-dialog-field="className">
+                          <option value="">default</option>
+                          <option value="wysiwyg-float-left">left</option>
+                          <option value="wysiwyg-float-right">right</option>
+                        </select>
+                      </label>
+                      <a data-wysihtml5-dialog-action="save">OK</a>&nbsp;<a data-wysihtml5-dialog-action="cancel">Cancel</a>
+                    </div>  
+                </div>
+                <textarea class="vLargeTextField" cols="40" id="id_nota" name="nota" rows="10" style="width: 90%;"></textarea>
+            </div>
+        </div>
       </div>
       <div class="control-group form-row field-like ">
           <div><div class="control-label"><label class="vCheckboxLabel" for="id_like">Like</label></div><div class="controls"><input id="id_like" name="like" type="checkbox"></div></div>
@@ -29,13 +100,19 @@
                     <label>Nota:</label>
                 </div>
                 <div class="controls">
-                    <span class="readonly">{{ issue_nota.nota }}</span>
+                    <span class="readonly">{{ issue_nota.nota|safe|linebreaks }}</span>
                 </div>
             </div>
         </div>
     </fieldset>
     {% endfor %}
     </div>
+<script>
+	var editor = new wysihtml5.Editor("id_nota", { 
+	  toolbar:      "toolbar", // id of toolbar element
+	  stylesheets: "/static/wysihtml5/examples/css/stylesheet.css",
+	  parserRules:  wysihtml5ParserRules // defined in parser rules set 
+	});
+</script>
 {% endif %}
 {% endblock %}
-
