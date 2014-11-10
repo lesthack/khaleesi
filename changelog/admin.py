@@ -158,6 +158,7 @@ class tipo_cambioAdmin(admin.ModelAdmin):
 class cambioForm(forms.ModelForm):
     class Meta:
         model = cambio
+        exclude = ['created_at', 'created_by', 'updated_at']
 
 class cambioAdmin(admin.ModelAdmin):
     list_display = ['id', 'objeto_link', 'tipo_link', 'get_objeto_cambio', 'nota_corta', 'created_by_link', 'created_at', 'updated_at']
