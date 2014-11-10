@@ -1,15 +1,14 @@
 # pyc
 *.pyc
 
+# Vim backups
+*.swp
+
 # configurations
 *.cnf
 
 # sensible information
 sensible.py
-
-# sublime
-*.sublime-workspace
-*.sublime-project
 
 # static
 static/*
@@ -17,5 +16,3 @@ static/*
 # documents
 media/documents/
 
-# migrations
-*/migrations/*
