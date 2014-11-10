@@ -10,22 +10,20 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
-import os
+import os, sys, traceback
+
+try:
+    from sensible import *
+except ImportError:
+    traceback.print_exc(file=sys.stdout)
+    print 'Help: \n\tCreate a file khaleesi\sensible.py \n\tSample https://gist.github.com/lesthack/0485bc3c94f340d73570'
+    sys.exit(0)
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 DEBUG = True
 TEMPLATE_DEBUG = True
 ALLOWED_HOSTS = []
-
-SECRET_KEY = 'g2d!%60junl6-^uw4t7w1hotyljdh0@)fw9ymgyxtgleqs)=t='
- 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 INSTALLED_APPS = (
     'suit',
