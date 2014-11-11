@@ -2,6 +2,7 @@
 from django import forms
 from django.contrib import admin
 from track.models import *
+from track.views import *
 import datetime
 
 class proyectoForm(forms.ModelForm):
@@ -9,6 +10,7 @@ class proyectoForm(forms.ModelForm):
         model = proyecto
         exclude = ['created_by', 'deleted','deleted_by','deleted_at']
 
+@admin.register(proyecto)
 class proyectoAdmin(admin.ModelAdmin):
     list_display = ['proyecto', 'link', 'descripcion', 'activos', 'cancelados', 'created_by', 'created_at', 'deleted', 'deleted_by']
     list_display_links = ['proyecto']
@@ -46,11 +48,13 @@ class moduloForm(forms.ModelForm):
         model = modulo
         exclude = ['created_by', 'deleted', 'deleted_by', 'deleted_at']
 
+@admin.register(modulo)
 class moduloAdmin(admin.ModelAdmin):
     list_display = ['modulo', 'proyecto_link', 'descripcion', 'issues_resueltos', 'issues_abiertos', 'issues_abandonados', 'issues_cancelados', 'created_by', 'created_at', 'deleted', 'deleted_by']
     list_display_links = ['modulo']
     search_fields = ['modulo', 'descripcion', 'created_by__username', 'deleted', 'deleted_by__username']
     list_filter = ['proyecto__proyecto', 'created_at','updated_at', 'deleted']
+    ordering = ('proyecto__proyecto', 'modulo')
     form = moduloForm
 
     def get_readonly_fields(self, request, obj=None):
@@ -79,11 +83,63 @@ class moduloAdmin(admin.ModelAdmin):
 
         return False
 
+class tareaForm(forms.ModelForm):
+    class Meta:
+        model = tarea
+        exclude = ['created_by', 'created_at', 'updated_at', 'status']
+
+@admin.register(tarea)
+class tareaAdmin(admin.ModelAdmin):
+    list_display = ['id', 'proyecto_link', 'modulo_link', 'nombre', 'fecha_inicial', 'fecha_final', 'horas_estimadas', 'status', 'get_last_status', 'responsable', 'created_at', 'updated_at', 'created_by']
+    list_display_links = ['id', 'nombre']
+    search_fields = ['nombre', 'descripcion', 'responsable__username']
+    list_filter = ['modulo__proyecto__proyecto', 'modulo__modulo', 'status', 'fecha_inicial', 'fecha_final']
+    form = tareaForm
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+            if obj.responsable is None:
+                obj.responsable = obj.created_by
+            obj.save() # and trigger signal
+        elif request.user == obj.responsable and not obj.fecha_inicial is None and not obj.fecha_final is None and not obj.horas_estimadas is None and obj.get_last_log().status == 0:
+            obj.save()
+            new_pizarron = pizarron(tarea=obj, created_by=obj.responsable)
+            new_pizarron.status = 1
+            new_pizarron.log = u'Tarea {} aceptada por {}.'.format(obj.id, obj.responsable)
+            new_pizarron.save()
+        else:
+            print '[admin_track_tarea] Alguien trata de guardar una tarea que bien, no es de él, o ya no es posible editar.'
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.status == 0: # Si aun esta abierto
+            if obj.get_last_log().status == 0 and obj.responsable == request.user:
+                if obj.fecha_inicial is None or obj.fecha_final is None or obj.horas_estimadas is None:
+                    return self.readonly_fields + ('modulo', 'nombre', 'descripcion', 'responsable', 'status')
+            self.actions = None
+            return self.readonly_fields + ('modulo', 'nombre', 'descripcion', 'responsable', 'fecha_inicial', 'fecha_final', 'horas_estimadas', 'status')
+        elif obj and obj.status == 1:
+            pass
+        return self.readonly_fields
+
+@admin.register(pizarron)
+class pizarronAdmin(admin.ModelAdmin):
+    list_display = ['id', 'responsable_link', 'proyecto_link', 'modulo_link', 'tarea_link', 'status', 'log', 'created_at']
+    #list_display_links = ['id']
+    search_fields = ['log']
+    list_filter = ['tarea__modulo__proyecto__proyecto', 'tarea__modulo__modulo', 'tarea__responsable__username', 'status']
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return self.readonly_fields + ('tarea', 'log', 'status', 'created_by', 'created_at', 'updated_at')
+        return self.readonly_fields
+
 class tipo_issueForm(forms.ModelForm):
     class Meta:
         model = tipo_issue
         exclude = ['created_by']
 
+@admin.register(tipo_issue)
 class tipo_issueAdmin(admin.ModelAdmin):
     list_display = ['tipo', 'created_by', 'created_at']
     list_display_links = ['tipo']
@@ -100,6 +156,7 @@ class issue_notaForm(forms.ModelForm):
         model = issue
         exclude = ['created_by']
 
+@admin.register(issue_nota)
 class issue_notaAdmin(admin.ModelAdmin):
     list_display = ['id', 'issue', 'nota', 'like', 'created_by', 'created_at']
     list_display_links = ['id']
@@ -121,6 +178,7 @@ class issueForm(forms.ModelForm):
         model = issue
         exclude = ['updated_by', 'created_by', 'created_at', 'updated_at', 'status']
 
+@admin.register(issue)
 class issueAdmin(admin.ModelAdmin):
     list_display = ['id', 'proyecto_link', 'modulo_link', 'tipo_issue', 'status', 'urgencia', 'importancia', 'descripcion', 'asignado_a', 'created_by', 'created_at']
     list_display_links = ['id']
@@ -189,8 +247,5 @@ class issueAdmin(admin.ModelAdmin):
         
         obj.save()
 
-admin.site.register(proyecto, proyectoAdmin)
-admin.site.register(modulo, moduloAdmin)
-admin.site.register(tipo_issue, tipo_issueAdmin)
-admin.site.register(issue, issueAdmin)
-admin.site.register(issue_nota, issue_notaAdmin)
+# Agregamos vistas personalizadas
+admin.site.get_urls = get_admin_urls(admin.site.get_urls())

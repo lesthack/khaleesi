@@ -59,6 +59,92 @@ class modulo(models.Model):
         return format_html('<a href="/admin/track/issue/?q=&status__exact=3">{0}</a>', issue.objects.filter(modulo=self, status=3).count())
     issues_cancelados.short_description = 'Cancelados'
 
+class tarea(models.Model):
+    STATUS_CHOICES = (
+        (0, 'Abierto'),
+        (1, 'Cerrado')
+    )
+    modulo = models.ForeignKey(modulo)
+    nombre = models.CharField(max_length=75)
+    descripcion = models.TextField()
+    fecha_inicial = models.DateTimeField(null=True)
+    fecha_final = models.DateTimeField(null=True)
+    horas_estimadas = models.IntegerField(blank=True, null=True, default=None)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=0)
+    responsable = models.ForeignKey(User, related_name='tarea_responsable')
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+    created_by = models.ForeignKey(User, blank=True, null=True)
+    
+    def __unicode__(self):
+        return '{}'.format(self.id)
+
+    def get_last_log(self):
+        return pizarron.objects.filter(tarea=self).order_by('-created_at')[:1][0]
+
+    def get_last_status(self):
+        return self.get_last_log().get_status()
+    get_last_status.short_description = 'En Pizarrón'
+
+    def proyecto_link(self):
+        return self.modulo.proyecto_link()
+    proyecto_link.short_description = 'Proyecto'
+    proyecto_link.allow_tags = True
+    proyecto_link.admin_order_field = 'proyecto'
+
+    def modulo_link(self):
+        return format_html('<a href="/admin/track/modulo/{0}/">{1}</a>', self.modulo.id, self.modulo.modulo)
+    modulo_link.short_description = 'Modulo'
+    modulo_link.allow_tags = True
+    modulo_link.admin_order_field = 'modulo'
+
+class pizarron(models.Model):
+    STATUS_CHOICES = (
+        (0, 'Asignado'),
+        (1, 'Pendiente'),
+        (2, 'En Proceso'),
+        (3, 'Pausado'),
+        (4, 'Terminado'),
+        (5, 'Bloqueado'),
+        (6, 'Reasignado')
+    )
+    tarea = models.ForeignKey(tarea)
+    log = models.CharField(max_length=75, null=True, default=None)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=0)
+    created_by = models.ForeignKey(User)
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+    
+    def __unicode__(self):
+        return '{}'.format(self.id)
+
+    def get_status(self):
+        return self.STATUS_CHOICES[self.status][1]
+
+    def proyecto_link(self):
+        return self.tarea.proyecto_link()
+    proyecto_link.short_description = 'Proyecto'
+    proyecto_link.allow_tags = True
+    proyecto_link.admin_order_field = 'tarea__modulo__proyecto'
+
+    def modulo_link(self):
+        return self.tarea.modulo_link()
+    modulo_link.short_description = 'Modulo'
+    modulo_link.allow_tags = True
+    modulo_link.admin_order_field = 'modulo'
+
+    def tarea_link(self):
+        return format_html('<a href="/admin/track/tarea/{0}/">{1}</a>', self.tarea.id, self.tarea.nombre)
+    tarea_link.short_description = 'Tarea'
+    tarea_link.allow_tags = True
+    tarea_link.admin_order_field = 'tarea'
+
+    def responsable_link(self):
+        return format_html('<a href="/admin/track/tarea/{0}/">{1}</a>', self.tarea.id, self.tarea.responsable)
+    responsable_link.short_description = 'Responsable'
+    responsable_link.allow_tags = True
+    responsable_link.admin_order_field = 'tarea__responsable'
+
 class tipo_issue(models.Model):
     tipo = models.CharField(max_length=50)
     created_at = models.DateTimeField(auto_now_add = True)
@@ -90,7 +176,7 @@ class issue(models.Model):
     urgencia = models.IntegerField(choices=URGENCIA_CHOICES, default=1)
     importancia = models.IntegerField(choices=IMPORTANCIA_CHOICES, default=0)
     descripcion = models.TextField()
-    asignado_a = models.ForeignKey(User, related_name='asignado_a')
+    asignado_a = models.ForeignKey(User, related_name='issue_asignado_a')
     link = models.CharField(max_length=1024, blank=True, null=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=0)
     created_at = models.DateTimeField(auto_now_add = True)

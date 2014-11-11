@@ -1,7 +1,9 @@
 from django.db.models.signals import post_save
 from django.core.mail import send_mail
+from django.dispatch import receiver
 from track.models import *
 
+@receiver(post_save, sender=issue)
 def send_update(sender, instance, created, **kwargs):
     STATUS_CHOICES = (
         (0, 'Abierto'),
@@ -19,4 +21,17 @@ def send_update(sender, instance, created, **kwargs):
 
     send_mail(subject, message, 'khaleesi@maices.com', [to,])
 
-post_save.connect(send_update, sender=issue)
+@receiver(post_save, sender=tarea)
+def signal_post_save_tarea(sender, instance, **kwargs):
+    if kwargs['created']: # Si es nuevo
+        new_pizarron = pizarron(tarea=instance, created_by=instance.created_by)
+    
+        if instance.created_by == instance.responsable:
+            new_pizarron.status = 1
+        else:
+            new_pizarron.status = 0
+
+        new_pizarron.log = u'Tarea {} asginada a {}.'.format(instance.id, instance.created_by.username)
+        new_pizarron.save()
+
+#post_save.connect(send_update, sender=issue)
