@@ -65,5 +65,15 @@ STATIC_ROOT = BASE_DIR + '/static'
 STATIC_URL = '/static/'
 
 SUIT_CONFIG = {
-    'ADMIN_NAME': 'Khaleesi'
+    'ADMIN_NAME': 'Khaleesi',
+    'MENU': [
+        {'app': 'changelog', 'icon':'icon-asterisk', 'models': (
+            'objeto', 'cambio',
+        )},
+        {'app': 'track', 'icon':'icon-tasks', 'label': 'Dashboard', 'models': (
+            'proyecto', 'modulo', 'tarea', 'issue', 'pizarron', 
+        )},
+        {'label': 'Gantt', 'url': '/admin/gantt/', 'icon': 'icon-leaf'}
+    ]
 }
+
