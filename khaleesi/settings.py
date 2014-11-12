@@ -55,8 +55,8 @@ TEMPLATE_CONTEXT_PROCESSORS = TCP + (
 ROOT_URLCONF = 'khaleesi.urls'
 WSGI_APPLICATION = 'khaleesi.wsgi.application'
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'es-mx'
+TIME_ZONE = 'America/Mexico_City'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True

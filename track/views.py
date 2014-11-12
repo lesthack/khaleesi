@@ -90,7 +90,7 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
                  },
                 'rows': rows,
                 'colors': colors,
-                'height': 75*len(rows)
+                'height': 75*n
             })
 
     return all_proyectos
