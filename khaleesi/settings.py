@@ -23,7 +23,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 DEBUG = True
 TEMPLATE_DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', 'khaleesi.unisem.mx']
+
+ADMINS = (
+    ('Jorge Hernandez', 'j.hernandez@maices.com')
+)
 
 INSTALLED_APPS = (
     'suit',
