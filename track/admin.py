@@ -12,7 +12,7 @@ class proyectoForm(forms.ModelForm):
 
 @admin.register(proyecto)
 class proyectoAdmin(admin.ModelAdmin):
-    list_display = ['proyecto', 'link', 'descripcion', 'activos', 'cancelados', 'created_by', 'created_at', 'deleted', 'deleted_by']
+    list_display = ['proyecto', 'link', 'descripcion', 'activos', 'cancelados', 'gantt_link', 'created_by', 'created_at', 'deleted', 'deleted_by']
     list_display_links = ['proyecto']
     search_fields = ['proyecto', 'link', 'descripcion', 'created_by__username', 'deleted', 'deleted_by__username']
     list_filter = ['created_at', 'updated_at', 'deleted']
@@ -50,7 +50,7 @@ class moduloForm(forms.ModelForm):
 
 @admin.register(modulo)
 class moduloAdmin(admin.ModelAdmin):
-    list_display = ['modulo', 'proyecto_link', 'descripcion', 'issues_resueltos', 'issues_abiertos', 'issues_abandonados', 'issues_cancelados', 'created_by', 'created_at', 'deleted', 'deleted_by']
+    list_display = ['proyecto_link', 'modulo', 'descripcion', 'issues_resueltos', 'issues_abiertos', 'issues_abandonados', 'issues_cancelados', 'created_by', 'created_at', 'deleted', 'deleted_by']
     list_display_links = ['modulo']
     search_fields = ['modulo', 'descripcion', 'created_by__username', 'deleted', 'deleted_by__username']
     list_filter = ['proyecto__proyecto', 'created_at','updated_at', 'deleted']
@@ -83,14 +83,15 @@ class moduloAdmin(admin.ModelAdmin):
 
         return False
 
-class tareaForm(forms.ModelForm):
+class tareaForm(forms.ModelForm):    
     class Meta:
         model = tarea
-        exclude = ['created_by', 'created_at', 'updated_at', 'status']
+        exclude = ['created_by', 'created_at', 'updated_at', 'status', 'horas_estimadas']
+    
 
 @admin.register(tarea)
 class tareaAdmin(admin.ModelAdmin):
-    list_display = ['id', 'proyecto_link', 'modulo_link', 'nombre', 'fecha_inicial', 'fecha_final', 'horas_estimadas', 'status', 'get_last_status', 'responsable', 'created_at', 'created_by']
+    list_display = ['id', 'proyecto_link', 'modulo_link', 'nombre', 'fecha_inicial', 'fecha_final', 'get_horas_estimadas', 'get_horas_reales','status', 'get_pizarron', 'responsable_link', 'created_at', 'created_by']
     list_display_links = ['id', 'nombre']
     search_fields = ['nombre', 'descripcion', 'responsable__username']
     list_filter = ['modulo__proyecto__proyecto', 'modulo__modulo', 'status', 'fecha_inicial', 'fecha_final']
@@ -114,6 +115,7 @@ class tareaAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         if obj and obj.status == 0: # Si aun esta abierto
+            self.exclude = ['created_by', 'created_at', 'updated_at', 'status']
             if obj.get_last_log().status == 0 and obj.responsable == request.user:
                 if obj.fecha_inicial is None or obj.fecha_final is None or obj.horas_estimadas is None:
                     return self.readonly_fields + ('modulo', 'nombre', 'descripcion', 'responsable', 'status')
@@ -131,11 +133,15 @@ class tareaAdmin(admin.ModelAdmin):
 @admin.register(pizarron)
 class pizarronAdmin(admin.ModelAdmin):
     list_display = ['id', 'responsable_link', 'proyecto_link', 'modulo_link', 'tarea_link', 'status', 'log', 'created_at']
-    #list_display_links = ['id']
+    list_display_links = ['id']
     search_fields = ['log']
     list_filter = ['tarea__modulo__proyecto__proyecto', 'tarea__modulo__modulo', 'tarea__responsable__username', 'status']
     exclude = ['created_by', 'log']
+    ordering = ['-created_at']
     actions = None
+
+    def has_add_permission(self, request):
+        return False
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
@@ -145,8 +151,8 @@ class pizarronAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user
-            if obj.status > 1:
-                obj.log = '{} ha marcado esta tarea como {}'.format(request.user, obj.get_status())
+            #if obj.status > 1:
+            #    obj.log = '{} ha marcado esta tarea como {}'.format(request.user, obj.get_status())
             obj.save() # and trigger signal
 
 class tipo_issueForm(forms.ModelForm):

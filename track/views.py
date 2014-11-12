@@ -2,14 +2,15 @@ from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.contrib.admin import site
 from django.conf.urls import patterns
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
 from track.models import *
 import random
 
 def my_view(request):
     return HttpResponse("Hello!")
 
-def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=False):
+def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
     """
         Gantt por proyecto
         Gantt por usuario
@@ -30,9 +31,21 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=False):
         
         rows = []
         colors = []
+        horas_estimatadas_totales = 0
+        horas_reales_totales = 0
+        total_tareas = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+        involucrados = []
+
         for view_tarea in list_tareas:
             if not terminadas and view_tarea.get_last_log().status == 4: 
                 continue
+            
+            horas_estimatadas_totales += view_tarea.get_horas_estimadas()
+            horas_reales_totales += view_tarea.get_horas_reales()
+            total_tareas[view_tarea.get_last_log().status] += 1
+            if view_tarea.responsable not in involucrados:
+                involucrados.append(view_tarea.responsable)
+
             row = {
                 'modulo': view_tarea.modulo.modulo, 
                 'tarea': u'[{1}] {0} - {2} - Estimadas: {3}hrs - Reales: {4}hrs'.format(view_tarea.nombre, view_tarea.responsable, view_tarea.get_last_status(), view_tarea.get_horas_estimadas(), view_tarea.get_horas_reales()), 
@@ -50,9 +63,31 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=False):
             rows.append(row)
             colors.append(view_tarea.get_color_status())
         
-        if len(rows) > 1:
+        n = len(rows)
+
+        if n > 1:
             all_proyectos.append({
                 'proyecto': view_proyecto,
+                'resume' : {
+                    'horas': {
+                        'estimadas': horas_estimatadas_totales,
+                        'reales': horas_reales_totales,
+                    },
+                    'periodo': {
+                        'inicio': list_tareas[0].created_at.strftime('%d/%m/%Y %H:%M'),
+                        'fin': list_tareas[n-1].created_at.strftime('%d/%m/%Y %H:%M')
+                    },
+                    'tareas': {
+                        'totales': n,
+                        'terminadas': total_tareas[4],
+                        'pendientes': total_tareas[1],
+                        'proceso': total_tareas[2],
+                        'pausadas': total_tareas[3],
+                        'bloqueadas': total_tareas[5],
+                        'asignadas': total_tareas[0]
+                    },
+                    'involucrados': involucrados
+                 },
                 'rows': rows,
                 'colors': colors,
                 'height': 75*len(rows)
@@ -62,6 +97,26 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=False):
 
 def gantt_por_proyecto(request, proyecto_id):
     proyectos = generate_gantt_filter(proyecto_id=proyecto_id)
+    return render_to_response(
+        'gantt.html', 
+        {
+            'proyectos': proyectos,
+        },
+        context_instance=RequestContext(request)
+    )
+
+def gantt_por_usuario(request, user_id):
+    proyectos = generate_gantt_filter(user_id=user_id)
+    return render_to_response(
+        'gantt.html', 
+        {
+            'proyectos': proyectos,
+        },
+        context_instance=RequestContext(request)
+    )
+
+def gantt_por_usuario_proyecto(request, user_id, proyecto_id):
+    proyectos = generate_gantt_filter(proyecto_id=proyecto_id, user_id=user_id)
     return render_to_response(
         'gantt.html', 
         {
@@ -80,6 +135,21 @@ def gantt_all(request):
         context_instance=RequestContext(request)
     )
 
+def board(request, tarea_id, status_id):
+    try:
+        view_tarea = tarea.objects.get(id=tarea_id)
+        if view_tarea.responsable != request.user:
+            raise PermissionDenied
+        new_pizarron = pizarron(tarea=view_tarea)
+        new_pizarron.status = int(status_id)
+        new_pizarron.created_by = request.user
+        new_pizarron.save()
+    except IndexError:
+        pass
+    except tarea.DoesNotExist:
+        return HttpResponseRedirect('/admin/track/tarea/')
+    return HttpResponseRedirect('/admin/track/tarea/{0}/'.format(tarea_id))
+
 # Urls
 def get_admin_urls(urls):
     def get_urls():
@@ -87,6 +157,9 @@ def get_admin_urls(urls):
             (r'^my_view/$', site.admin_view(my_view)),
             (r'^gantt/$', site.admin_view(gantt_all)),
             (r'^track/proyecto/(?P<proyecto_id>\d+)/gantt/$', site.admin_view(gantt_por_proyecto)),
+            (r'^track/user/(?P<user_id>\d+)/gantt/$', site.admin_view(gantt_por_usuario)),
+            (r'^track/user/(?P<user_id>\d+)/proyecto/(?P<proyecto_id>\d+)/gantt/$', site.admin_view(gantt_por_usuario_proyecto)),
+            (r'^track/tarea/(?P<tarea_id>\d+)/board/(?P<status_id>\d+)/$', site.admin_view(board)),
         )
         return my_urls + urls
     return get_urls

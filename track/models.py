@@ -18,10 +18,15 @@ class proyecto(models.Model):
         return self.proyecto
 
     def activos(self):
-        return format_html('<a href="/admin/track/modulo/?q=&proyecto__proyecto={0}&deleted__exact=0">{1}</a>', self.proyecto, modulo.objects.filter(proyecto=self, deleted=False).count())
+        return format_html(u'<a href="/admin/track/modulo/?q=&proyecto__proyecto={0}&deleted__exact=0">{1}</a>', self.proyecto, modulo.objects.filter(proyecto=self, deleted=False).count())
 
     def cancelados(self):
-        return format_html('<a href="/admin/track/modulo/?q=&proyecto__proyecto={0}&deleted__exact=1">{1}</a>', self.proyecto, modulo.objects.filter(proyecto=self, deleted=True).count())
+        return format_html(u'<a href="/admin/track/modulo/?q=&proyecto__proyecto={0}&deleted__exact=1">{1}</a>', self.proyecto, modulo.objects.filter(proyecto=self, deleted=True).count())
+
+    def gantt_link(self):
+        return format_html(u'<a href="/admin/track/proyecto/{}/gantt/">Ver</a>'.format(self.id))
+    gantt_link.short_description = 'Gantt'
+    gantt_link.allow_tags = True
 
 class modulo(models.Model):
     proyecto = models.ForeignKey(proyecto)
@@ -83,6 +88,7 @@ class tarea(models.Model):
         if self.horas_estimadas:
             return self.horas_estimadas
         return 0
+    get_horas_estimadas.short_description = 'Hrs Estimadas'
 
     def get_horas_reales(self):
         horas = 0
@@ -105,6 +111,7 @@ class tarea(models.Model):
             last_status = view_pizarron.status
 
         return horas
+    get_horas_reales.short_description = 'Hrs Reales'
 
     def get_last_log(self):
         try:
@@ -114,13 +121,13 @@ class tarea(models.Model):
 
     def get_color_status(self):
         colors = {
-            0: 'purple',
-            1: 'yellow',
-            2: 'blue',
-            3: 'orange',
-            4: 'green',
-            5: 'red',
-            6: 'purple',
+            0: '#8A2BE2', # purple - Asignado
+            1: '#FFA500', # yellow - Pendiente
+            2: '#00008B', # blue - En Proceso
+            3: '#FF4500', # orange - Pausado
+            4: '#006400', # green - Terminado
+            5: '#8B0000', # red - Bloqueado
+            6: '#8A2BE2', # purple - Reasignado
         }
         try:
             return colors[self.get_last_log().status]
@@ -132,7 +139,10 @@ class tarea(models.Model):
             return self.get_last_log().get_status()
         except:
             return 'Sin actividad'
-    get_last_status.short_description = 'En Pizarrón'
+
+    def get_pizarron(self):
+        return format_html(u'<span style="color: {1};">{0}</span>'.format(self.get_last_status(), self.get_color_status()))
+    get_pizarron.short_description = 'Pizarrón'
 
     def proyecto_link(self):
         return self.modulo.proyecto_link()
@@ -145,6 +155,12 @@ class tarea(models.Model):
     modulo_link.short_description = 'Modulo'
     modulo_link.allow_tags = True
     modulo_link.admin_order_field = 'modulo'
+
+    def responsable_link(self):
+        return format_html('<a href="/admin/track/user/{0}/proyecto/{1}/gantt/">{2}</a>', self.responsable.id, self.modulo.proyecto.id, self.responsable.username)
+    responsable_link.short_description = 'Responsable'
+    responsable_link.allow_tags = True
+    responsable_link.admin_order_field = 'responsable'
 
 class pizarron(models.Model):
     STATUS_CHOICES = (
@@ -165,6 +181,11 @@ class pizarron(models.Model):
     
     def __unicode__(self):
         return '{}'.format(self.id)
+    
+    def save(self, *args, **kwargs):
+        if self.status > 1:
+            self.log = u'{0} ha marcado como {1} la tarea {2}.'.format(self.created_by.username, self.get_status(), self.tarea.id)
+        super(pizarron, self).save(*args, **kwargs)
 
     def get_status(self):
         return self.STATUS_CHOICES[self.status][1]
@@ -188,7 +209,7 @@ class pizarron(models.Model):
     tarea_link.admin_order_field = 'tarea'
 
     def responsable_link(self):
-        return format_html('<a href="/admin/track/tarea/{0}/">{1}</a>', self.tarea.id, self.tarea.responsable)
+        return format_html('<a href="/admin/track/user/{0}/proyecto/{1}/gantt/">{2}</a>', self.tarea.responsable.id, self.tarea.modulo.proyecto.id, self.tarea.responsable)
     responsable_link.short_description = 'Responsable'
     responsable_link.allow_tags = True
     responsable_link.admin_order_field = 'tarea__responsable'
