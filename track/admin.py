@@ -90,10 +90,11 @@ class tareaForm(forms.ModelForm):
 
 @admin.register(tarea)
 class tareaAdmin(admin.ModelAdmin):
-    list_display = ['id', 'proyecto_link', 'modulo_link', 'nombre', 'fecha_inicial', 'fecha_final', 'horas_estimadas', 'status', 'get_last_status', 'responsable', 'created_at', 'updated_at', 'created_by']
+    list_display = ['id', 'proyecto_link', 'modulo_link', 'nombre', 'fecha_inicial', 'fecha_final', 'horas_estimadas', 'status', 'get_last_status', 'responsable', 'created_at', 'created_by']
     list_display_links = ['id', 'nombre']
     search_fields = ['nombre', 'descripcion', 'responsable__username']
     list_filter = ['modulo__proyecto__proyecto', 'modulo__modulo', 'status', 'fecha_inicial', 'fecha_final']
+    actions = None
     form = tareaForm
 
     def save_model(self, request, obj, form, change):
@@ -122,17 +123,31 @@ class tareaAdmin(admin.ModelAdmin):
             pass
         return self.readonly_fields
 
+    def get_form(self, request, obj=None, **kwargs):
+        if obj:
+            self.change_form_template = 'tarea_view_form.html'
+        return super(tareaAdmin, self).get_form(request, obj, **kwargs)
+
 @admin.register(pizarron)
 class pizarronAdmin(admin.ModelAdmin):
     list_display = ['id', 'responsable_link', 'proyecto_link', 'modulo_link', 'tarea_link', 'status', 'log', 'created_at']
     #list_display_links = ['id']
     search_fields = ['log']
     list_filter = ['tarea__modulo__proyecto__proyecto', 'tarea__modulo__modulo', 'tarea__responsable__username', 'status']
+    exclude = ['created_by', 'log']
+    actions = None
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
             return self.readonly_fields + ('tarea', 'log', 'status', 'created_by', 'created_at', 'updated_at')
         return self.readonly_fields
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+            if obj.status > 1:
+                obj.log = '{} ha marcado esta tarea como {}'.format(request.user, obj.get_status())
+            obj.save() # and trigger signal
 
 class tipo_issueForm(forms.ModelForm):
     class Meta:

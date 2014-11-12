@@ -79,11 +79,59 @@ class tarea(models.Model):
     def __unicode__(self):
         return '{}'.format(self.id)
 
+    def get_horas_estimadas(self):
+        if self.horas_estimadas:
+            return self.horas_estimadas
+        return 0
+
+    def get_horas_reales(self):
+        horas = 0
+        dateini = None
+        datefin = None
+        last_status = None
+        list_pizarron = pizarron.objects.filter(tarea=self).order_by('created_at')
+        
+        for view_pizarron in list_pizarron:
+            if view_pizarron.status == 2 and last_status != 2:                
+                dateini = view_pizarron.created_at
+            if view_pizarron.status != 2:
+                datefin = view_pizarron.created_at
+                if dateini and datefin:
+                    horas_lambda = datefin - dateini
+                    horas += horas_lambda.seconds/3600
+                    #minutos = horas_lambda.seconds%3600/60
+                    dateini = None
+
+            last_status = view_pizarron.status
+
+        return horas
+
     def get_last_log(self):
-        return pizarron.objects.filter(tarea=self).order_by('-created_at')[:1][0]
+        try:
+            return pizarron.objects.filter(tarea=self).order_by('-created_at')[:1][0]
+        except:
+            return None
+
+    def get_color_status(self):
+        colors = {
+            0: 'purple',
+            1: 'yellow',
+            2: 'blue',
+            3: 'orange',
+            4: 'green',
+            5: 'red',
+            6: 'purple',
+        }
+        try:
+            return colors[self.get_last_log().status]
+        except:
+            return colors[0]
 
     def get_last_status(self):
-        return self.get_last_log().get_status()
+        try:
+            return self.get_last_log().get_status()
+        except:
+            return 'Sin actividad'
     get_last_status.short_description = 'En Pizarrón'
 
     def proyecto_link(self):
@@ -109,7 +157,7 @@ class pizarron(models.Model):
         (6, 'Reasignado')
     )
     tarea = models.ForeignKey(tarea)
-    log = models.CharField(max_length=75, null=True, default=None)
+    log = models.CharField(max_length=75, null=True, default=None, blank=True)
     status = models.IntegerField(choices=STATUS_CHOICES, default=0)
     created_by = models.ForeignKey(User)
     created_at = models.DateTimeField(auto_now_add = True)
@@ -134,7 +182,7 @@ class pizarron(models.Model):
     modulo_link.admin_order_field = 'modulo'
 
     def tarea_link(self):
-        return format_html('<a href="/admin/track/tarea/{0}/">{1}</a>', self.tarea.id, self.tarea.nombre)
+        return format_html(u'<a href="/admin/track/tarea/{0}/">{1}</a>', self.tarea.id, self.tarea.nombre)
     tarea_link.short_description = 'Tarea'
     tarea_link.allow_tags = True
     tarea_link.admin_order_field = 'tarea'

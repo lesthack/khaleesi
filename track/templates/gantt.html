@@ -1,50 +1,51 @@
 {% extends "admin/base_site.html" %}
-
+{% block title %}Gantt - Proyecto{% endblock %}
 {% block extrahead %}
     <style>
-        body{
-            background: #FFF;
+        .colM h1{
+            margin-bottom: inherit;
         }
         #content {                
             padding: 10px;
             margin: 0px;
         }
+        .gantt{
+            width: 99%;
+        }
     </style>
     <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['timeline']}]}"></script>
     <script type="text/javascript">
-        google.setOnLoadCallback(drawChart);
+        google.setOnLoadCallback(drawCharts);
 
-        function drawChart() {
-          var container = document.getElementById('example1');
-          var chart = new google.visualization.Timeline(container);
+        function drawCharts() {
+            var content = document.getElementById('content');
+            {% for proyecto in proyectos %}
+                var colors_{{ proyecto.proyecto.id }} = [{% for color in proyecto.colors %}'{{ color }}', {% endfor %}];
+                var options_{{ proyecto.proyecto.id }} = {
+                    timeline: { groupByRowLabel: false },
+                    colors: colors_{{ proyecto.proyecto.id }},
+                };
+                var div_{{ proyecto.proyecto.id }} = $('<div><h1>Diagrama Gantt del proyecto {{ proyecto.proyecto.proyecto }}.</h1><div id="gantt_{{ proyecto.proyecto.id }}" class="gantt" style="height: {{ proyecto.height }}px"></div></div>');
+                    $(content).append(div_{{ proyecto.proyecto.id }});
+                var container_{{ proyecto.proyecto.id }} = document.getElementById('gantt_{{ proyecto.proyecto.id }}');
+                var chart_{{ proyecto.proyecto.id }} = new google.visualization.Timeline(container_{{ proyecto.proyecto.id }});
+                
+                var dataTable_{{ proyecto.proyecto.id }} = new google.visualization.DataTable();
+                dataTable_{{ proyecto.proyecto.id }}.addColumn({ type: 'string', id: 'Modulo' });
+                dataTable_{{ proyecto.proyecto.id }}.addColumn({ type: 'string', id: 'Tarea' });
+                dataTable_{{ proyecto.proyecto.id }}.addColumn({ type: 'date', id: 'Inicia' });
+                dataTable_{{ proyecto.proyecto.id }}.addColumn({ type: 'date', id: 'Termina' });
 
-          var dataTable = new google.visualization.DataTable();
-          dataTable.addColumn({ type: 'string', id: 'Position' });
-          dataTable.addColumn({ type: 'string', id: 'Name' });
-          dataTable.addColumn({ type: 'date', id: 'Start' });
-          dataTable.addColumn({ type: 'date', id: 'End' });
-          dataTable.addRows([
-            [ 'President',          'George Washington', new Date(1789, 3, 29), new Date(1797, 2, 3)],
-            [ 'President',          'John Adams',        new Date(1797, 2, 3),  new Date(1801, 2, 3)],
-            [ 'President',          'Thomas Jefferson',  new Date(1801, 2, 3),  new Date(1809, 2, 3)],
-            [ 'Vice President',     'John Adams',        new Date(1789, 3, 20), new Date(1797, 2, 3)],
-            [ 'Vice President',     'Thomas Jefferson',  new Date(1797, 2, 3),  new Date(1801, 2, 3)],
-            [ 'Vice President',     'Aaron Burr',        new Date(1801, 2, 3),  new Date(1805, 2, 3)],
-            [ 'Vice President',     'George Clinton',    new Date(1805, 2, 3),  new Date(1812, 3, 19)],
-            [ 'Secretary of State', 'John Jay',          new Date(1789, 8, 25), new Date(1790, 2, 21)],
-            [ 'Secretary of State', 'Thomas Jefferson',  new Date(1790, 2, 21), new Date(1793, 11, 30)],
-            [ 'Secretary of State', 'Edmund Randolph',   new Date(1794, 0, 1),  new Date(1795, 7, 19)],
-            [ 'Secretary of State', 'Timothy Pickering', new Date(1795, 7, 19), new Date(1800, 4, 11)],
-            [ 'Secretary of State', 'Charles Lee',       new Date(1800, 4, 12), new Date(1800, 5, 4)],
-            [ 'Secretary of State', 'John Marshall',     new Date(1800, 5, 12), new Date(1801, 2, 3)],
-            [ 'Secretary of State', 'Levi Lincoln',      new Date(1801, 2, 4),  new Date(1801, 4, 0)],
-            [ 'Secretary of State', 'James Madison',     new Date(1801, 4, 1),  new Date(1809, 2, 2)]]);
+                dataTable_{{ proyecto.proyecto.id }}.addRows([
+                {% for row in proyecto.rows %}[ '{{ row.modulo }}', '{{ row.tarea }}' , new Date({{ row.fecha_inicial.year }}, {{ row.fecha_inicial.month }}, {{ row.fecha_inicial.day }}), new Date({{ row.fecha_final.year }}, {{ row.fecha_final.month }}, {{ row.fecha_final.day }})],
+                {% endfor %}
+                ]);
 
-          chart.draw(dataTable);            
+                chart_{{ proyecto.proyecto.id }}.draw(dataTable_{{ proyecto.proyecto.id }}, options_{{ proyecto.proyecto.id }});
+            {% endfor %}
         }
     </script>
 {% endblock %}
 
 {% block content %}
-    <div id="example1" style="width: 900px; height: 180px;"></div>
 {% endblock %}
