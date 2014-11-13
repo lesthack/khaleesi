@@ -17,7 +17,7 @@ def send_update(sender, instance, **kwargs):
         message = u'El usuario {} ha {} el issue que le asignaste. \n\nDescripción: \n\n\t{} \n\nPuedes ver mas detalles en el siguiente enlace. \n{}.'.format(instance.asignado_a.username, instance.get_status(), instance.descripcion, url)
         to = instance.created_by.email
     if to:
-        send_mail(subject, message, 'support@koalaideas.com', [to,])
+        send_mail(subject, message, 'khaleesi@koalaideas.com', [to,])
 
 @receiver(post_save, sender=tarea)
 def signal_post_save_tarea(sender, instance, **kwargs):
