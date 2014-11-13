@@ -190,6 +190,9 @@ class pizarron(models.Model):
             if self.status == 4:
                 self.tarea.status = 1
                 self.tarea.save()
+            elif self.status == 6:
+                self.tarea.status = 0
+                self.tarea.save()
         super(pizarron, self).save(*args, **kwargs)
 
     def get_status(self):
