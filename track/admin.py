@@ -101,7 +101,7 @@ class tareaAdmin(admin.ModelAdmin):
     list_display = ['id', 'proyecto_link', 'modulo_link', 'nombre', 'fecha_inicial', 'fecha_final', 'get_horas_estimadas', 'get_horas_reales','status', 'get_pizarron', 'responsable_link', 'created_at', 'created_by']
     list_display_links = ['id', 'nombre']
     search_fields = ['nombre', 'descripcion', 'responsable__username']
-    list_filter = ['modulo__proyecto__proyecto', 'modulo__modulo', 'status', 'fecha_inicial', 'fecha_final']
+    list_filter = ['modulo__proyecto__proyecto', 'modulo__modulo', 'status', 'responsable', 'fecha_inicial', 'fecha_final']
     actions = None
     form = tareaForm
 
@@ -129,7 +129,7 @@ class tareaAdmin(admin.ModelAdmin):
             self.actions = None
             return self.readonly_fields + ('modulo', 'nombre', 'descripcion', 'responsable', 'fecha_inicial', 'fecha_final', 'horas_estimadas', 'status')
         elif obj and obj.status == 1:
-            pass
+            return self.readonly_fields + ('modulo', 'nombre', 'descripcion', 'responsable', 'fecha_inicial', 'fecha_final', 'horas_estimadas', 'status')
         return self.readonly_fields
 
     def get_form(self, request, obj=None, **kwargs):

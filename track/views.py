@@ -31,7 +31,7 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
         list_proyectos = list_proyectos.filter(id=proyecto_id)
 
     for view_proyecto in list_proyectos:
-        list_tareas = tarea.objects.filter(modulo__proyecto=view_proyecto).order_by('fecha_inicial', 'fecha_final')
+        list_tareas = tarea.objects.filter(status=0, modulo__proyecto=view_proyecto).order_by('fecha_inicial', 'fecha_final')
         
         if user_id:
             list_tareas = list_tareas.filter(responsable_id=user_id)
