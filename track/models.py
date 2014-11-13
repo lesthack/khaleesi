@@ -187,7 +187,7 @@ class pizarron(models.Model):
     def save(self, *args, **kwargs):
         if self.status > 1:
             self.log = u'{0} ha marcado como {1} la tarea {2}.'.format(self.created_by.username, self.get_status(), self.tarea.id)
-            if self.status == 4:
+            if self.status in [4, 7]:
                 self.tarea.status = 1
                 self.tarea.save()
             elif self.status == 6:
