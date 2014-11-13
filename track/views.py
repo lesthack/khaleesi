@@ -44,9 +44,6 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
         involucrados = []
 
         for view_tarea in list_tareas:
-            if not terminadas and view_tarea.get_last_log().status == 4: 
-                continue
-            
             if view_tarea.fecha_inicial >= view_tarea.fecha_final:
                 continue
 
