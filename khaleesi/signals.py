@@ -4,22 +4,16 @@ from django.dispatch import receiver
 from track.models import *
 
 @receiver(post_save, sender=issue)
-def send_update(sender, instance, created, **kwargs):
-    STATUS_CHOICES = (
-        (0, 'Abierto'),
-        (1, 'Resuelto'),
-        (2, 'Abandonado'),
-        (3, 'Cancelado')
-    )
+def send_update(sender, instance, **kwargs):
     message = 'http://khaleesi.unisem.mx/admin/track/issue/{0}/'.format(instance.id)
-    subject = 'Khaleesi: {0} {1} {2}'.format(instance.tipo_issue, instance.id, STATUS_CHOICES[instance.status][1])
-    
-    if instance.status == 0:
+    subject = 'Khaleesi: {0} {1} {2}'.format(instance.tipo_issue, instance.id, instance.get_status())
+    to = None
+    if kwargs['created'] and instance.status == 0:
         to = instance.asignado_a.email
-    else:
+    elif not kwargs['created'] and instance.status != 0:
         to = instance.created_by.email
-
-    send_mail(subject, message, 'khaleesi@maices.com', [to,])
+    if to:
+        send_mail(subject, message, 'khaleesi@koalaideas.com', [to,])
 
 @receiver(post_save, sender=tarea)
 def signal_post_save_tarea(sender, instance, **kwargs):

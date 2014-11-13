@@ -258,6 +258,9 @@ class issue(models.Model):
     def __unicode__(self):
         return '{0}'.format(self.id)
 
+    def get_status(self):
+        return self.STATUS_CHOICES[self.status][1]
+
     def proyecto_link(self):
         return format_html('<a href="/admin/track/proyecto/{0}/">{1}</a>', self.modulo.proyecto.id, self.modulo.proyecto)
     proyecto_link.short_description = 'Proyecto'
