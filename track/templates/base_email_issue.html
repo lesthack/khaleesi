@@ -1,0 +1,35 @@
+{% extends "base_email.html" %}
+{% block titulo%}Issue {{ issue.id }}{% endblock %}
+{% block descripcion %}
+    {% if es_nuevo and issue.asignado_a == issue.created_by %}
+        Al parecer te has asignaod un nuevo issue por resolver.
+    {% elif es_nuevo and issue.asignado_a != issue.created_by %}
+        El usuario <b>{{ issue.created_by.username }}</b> te ha asignado un nuevo issue a resolver.
+    {% elif not es_nuevo and issue.asignado_a == issue.created_by %}
+        Has marcado como {{ issue.get_status }} este issue.
+    {% elif not es_nuevo and issue.asignado_a != issue.created_by %}
+        El usuario <b>{{ issue.asignado_a.username }}</b> ha <b>{{ issue.get_status }}</b> el issue que le asignaste.
+    {% endif %}
+{% endblock %}
+{% block contenido %}
+    <h4>Detalles:</h4>
+    <div class="resume">
+        <p><span class="field">ID</span> : <b>{{ issue.id }}</b></p>
+        <p><span class="field">Proyecto</span> : <b>{{ issue.modulo.proyecto }}</b></p>
+        <p><span class="field">Modulo</span> : <b>{{ issue.modulo.modulo }}</b></p>
+        <p><span class="field">Tipo</span> : <b>{{ issue.tipo_issue }}</b></p>
+        <p><span class="field">Urgencia</span> : <b>{{ issue.get_urgencia }}</b></p>
+        <p><span class="field">Importancia</span> : <b>{{ issue.get_importancia }}</b></p>
+        <p><span class="field">Fecha</span> : <b>{{ issue.created_at }}</b></p>
+    </div>
+    <br>
+    <h4>Descripción</h4>
+    <div class="descripcion">
+        <p>{{ issue.descripcion|safe|linebreaks }}</p>
+    </div>
+    <br>
+    <hr/>
+{% endblock %}
+{% block patas %}
+    <p><a href="http://khaleesi.unisem.mx/admin/track/issue/{{ issue.id }}/" class="btn-primary">Ver Detalles</a></p>
+{% endblock %}

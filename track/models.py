@@ -261,6 +261,12 @@ class issue(models.Model):
     def get_status(self):
         return self.STATUS_CHOICES[self.status][1]
 
+    def get_urgencia(self):
+        return self.URGENCIA_CHOICES[self.urgencia][1]
+
+    def get_importancia(self):
+        return self.IMPORTANCIA_CHOICES[self.importancia][1]
+
     def proyecto_link(self):
         return format_html('<a href="/admin/track/proyecto/{0}/">{1}</a>', self.modulo.proyecto.id, self.modulo.proyecto)
     proyecto_link.short_description = 'Proyecto'

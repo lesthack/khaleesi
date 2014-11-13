@@ -8,7 +8,14 @@ from track.models import *
 import random
 
 def my_view(request):
-    return HttpResponse("Hello!")
+    return render_to_response(
+        'base_email_issue.html', 
+        {
+            'issue': issue.objects.get(id=221),
+            'es_nuevo': False
+        },
+        context_instance=RequestContext(request)
+    )
 
 def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
     """
