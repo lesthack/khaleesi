@@ -87,7 +87,14 @@ class tareaForm(forms.ModelForm):
     class Meta:
         model = tarea
         exclude = ['created_by', 'created_at', 'updated_at', 'status']
-    
+    def clean(self):
+        cleaned_data = super(tareaForm, self).clean()
+
+        if cleaned_data.get("fecha_inicial") >= cleaned_data.get("fecha_final"):
+            msg = u'La fecha final debe ser mayor a la fecha inicial.'
+            self._errors["fecha_final"] = self.error_class([msg])
+
+        return cleaned_data
 
 @admin.register(tarea)
 class tareaAdmin(admin.ModelAdmin):

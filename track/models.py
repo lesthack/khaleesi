@@ -128,6 +128,7 @@ class tarea(models.Model):
             4: '#006400', # green - Terminado
             5: '#8B0000', # red - Bloqueado
             6: '#8A2BE2', # purple - Reasignado
+            7: '#778899', # grey - Abandonada
         }
         try:
             return colors[self.get_last_log().status]
@@ -170,7 +171,8 @@ class pizarron(models.Model):
         (3, 'Pausado'),
         (4, 'Terminado'),
         (5, 'Bloqueado'),
-        (6, 'Reasignado')
+        (6, 'Reasignado'),
+        (7, 'Abandonada'),
     )
     tarea = models.ForeignKey(tarea)
     log = models.CharField(max_length=75, null=True, default=None, blank=True)

@@ -33,13 +33,16 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
         colors = []
         horas_estimatadas_totales = 0
         horas_reales_totales = 0
-        total_tareas = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0}
+        total_tareas = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
         involucrados = []
 
         for view_tarea in list_tareas:
             if not terminadas and view_tarea.get_last_log().status == 4: 
                 continue
             
+            if view_tarea.fecha_inicial >= view_tarea.fecha_final:
+                continue
+
             horas_estimatadas_totales += view_tarea.get_horas_estimadas()
             horas_reales_totales += view_tarea.get_horas_reales()
             total_tareas[view_tarea.get_last_log().status] += 1
@@ -84,7 +87,8 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
                         'proceso': total_tareas[2],
                         'pausadas': total_tareas[3],
                         'bloqueadas': total_tareas[5],
-                        'asignadas': total_tareas[0]
+                        'asignadas': total_tareas[0],
+                        'abandonadas': total_tareas[7]
                     },
                     'involucrados': involucrados
                  },
