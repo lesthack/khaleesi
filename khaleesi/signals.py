@@ -13,7 +13,7 @@ def send_update(sender, instance, **kwargs):
 
     if kwargs['created'] and instance.status == 0:
         to = instance.asignado_a.email
-    elif not kwargs['created'] and instance.status != 0 and instance.asignado_a != instance.created_by:
+    elif not kwargs['created'] and instance.status != 0:
         to = instance.created_by.email
 
     if to:

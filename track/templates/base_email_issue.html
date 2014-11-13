@@ -2,7 +2,7 @@
 {% block titulo%}Issue {{ issue.id }}{% endblock %}
 {% block descripcion %}
     {% if es_nuevo and issue.asignado_a == issue.created_by %}
-        Al parecer te has asignaod un nuevo issue por resolver.
+        Al parecer te has asignado un nuevo issue por resolver.
     {% elif es_nuevo and issue.asignado_a != issue.created_by %}
         El usuario <b>{{ issue.created_by.username }}</b> te ha asignado un nuevo issue a resolver.
     {% elif not es_nuevo and issue.asignado_a == issue.created_by %}
