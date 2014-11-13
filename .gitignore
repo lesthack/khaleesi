@@ -4,6 +4,9 @@
 # Vim backups
 *.swp
 
+# Scract backups
+*~
+
 # configurations
 *.cnf
 
