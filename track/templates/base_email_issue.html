@@ -28,6 +28,17 @@
         <p>{{ issue.descripcion|safe|linebreaks }}</p>
     </div>
     <br>
+    {% if not es_nuevo %}
+        <h4>Notas:</h4>
+        <div class="notas">
+            {% for nota in issue.get_notas %}
+            <div class="nota" style="margin-top: 10px;">
+                <p><b>{{ nota.created_at }} por {{ nota.created_by.username }}</b></p>
+                <p>{{ nota.nota|safe|linebreaks }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
     <hr/>
 {% endblock %}
 {% block patas %}
