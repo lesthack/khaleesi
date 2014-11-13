@@ -31,7 +31,7 @@ def signal_post_save_tarea(sender, instance, **kwargs):
         else:
             new_pizarron.status = 0
 
-        new_pizarron.log = u'Tarea {} asginada a {}.'.format(instance.id, instance.created_by.username)
+        new_pizarron.log = u'Tarea {} asginada a {}.'.format(instance.id, instance.responsable.username)
         new_pizarron.save()
 
 #post_save.connect(send_update, sender=issue)

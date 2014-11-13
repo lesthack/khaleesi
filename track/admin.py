@@ -86,7 +86,7 @@ class moduloAdmin(admin.ModelAdmin):
 class tareaForm(forms.ModelForm):    
     class Meta:
         model = tarea
-        exclude = ['created_by', 'created_at', 'updated_at', 'status', 'horas_estimadas']
+        exclude = ['created_by', 'created_at', 'updated_at', 'status']
     
 
 @admin.register(tarea)
