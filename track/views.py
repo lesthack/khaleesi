@@ -87,8 +87,8 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
                         'reales': horas_reales_totales,
                     },
                     'periodo': {
-                        'inicio': list_tareas[0].created_at.strftime('%d/%m/%Y %H:%M'),
-                        'fin': list_tareas[n-1].created_at.strftime('%d/%m/%Y %H:%M')
+                        'inicio': list_tareas[0].fecha_inicial.strftime('%d/%m/%Y %H:%M'),
+                        'fin': list_tareas[n-1].fecha_final.strftime('%d/%m/%Y %H:%M')
                     },
                     'tareas': {
                         'totales': numero_tareas_totales,
