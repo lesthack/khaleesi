@@ -44,10 +44,7 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
         total_tareas = {0:0, 1:0, 2:0, 3:0, 4: 0, 5:0, 6:0, 7:0}
         involucrados = []
 
-        # Solo tareas abiertas
-        list_tareas = list_tareas.filter(status=0)
-
-        for view_tarea in list_tareas:
+        for view_tarea in list_tareas.filter(status=0):
             # Para no afectar a google en el diagrama de Gantt
             if view_tarea.fecha_inicial >= view_tarea.fecha_final:
                 continue
@@ -76,8 +73,8 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
             rows.append(row)
             colors.append(view_tarea.get_color_status())
         
-        n = len(rows)
-        
+        n = len(rows)       
+                                
         if n > 1:
             all_proyectos.append({
                 'proyecto': view_proyecto,
@@ -87,8 +84,8 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
                         'reales': horas_reales_totales,
                     },
                     'periodo': {
-                        'inicio': list_tareas[0].fecha_inicial.strftime('%d/%m/%Y %H:%M'),
-                        'fin': list_tareas[n-1].fecha_final.strftime('%d/%m/%Y %H:%M')
+                        'inicio': list_tareas.order_by('fecha_inicial').first().fecha_inicial.strftime('%d/%m/%Y %H:%M'),
+                        'fin': list_tareas.order_by('-fecha_final').first().fecha_final.strftime('%d/%m/%Y %H:%M')
                     },
                     'tareas': {
                         'totales': numero_tareas_totales,
