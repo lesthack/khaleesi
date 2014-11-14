@@ -219,6 +219,7 @@ class issueAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj and not request.user.is_superuser:
             self.actions = None
+            self.exclude = ()
             readonly_fields = ()
 
             if obj.asignado_a  == request.user:
