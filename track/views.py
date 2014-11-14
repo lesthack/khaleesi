@@ -78,8 +78,6 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
         
         n = len(rows)
         
-        print total_tareas
-
         if n > 1:
             all_proyectos.append({
                 'proyecto': view_proyecto,

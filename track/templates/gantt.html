@@ -37,7 +37,7 @@
                 dataTable_{{ proyecto.proyecto.id }}.addColumn({ type: 'date', id: 'Termina' });
 
                 dataTable_{{ proyecto.proyecto.id }}.addRows([
-                {% for row in proyecto.rows %}[ '{{ row.modulo }}', '{{ row.tarea }}' , new Date({{ row.fecha_inicial.year }}, {{ row.fecha_inicial.month }}, {{ row.fecha_inicial.day }}), new Date({{ row.fecha_final.year }}, {{ row.fecha_final.month }}, {{ row.fecha_final.day }})],
+                {% for row in proyecto.rows %}[ '{{ row.modulo }}', '{{ row.tarea }}' , new Date({{ row.fecha_inicial.year }}, {{ row.fecha_inicial.month|add:"-1" }}, {{ row.fecha_inicial.day }}), new Date({{ row.fecha_final.year }}, {{ row.fecha_final.month }}, {{ row.fecha_final.day }})],
                 {% endfor %}
                 ]);
 
