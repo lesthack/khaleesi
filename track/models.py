@@ -104,13 +104,11 @@ class tarea(models.Model):
                 datefin = view_pizarron.created_at
                 if dateini and datefin:
                     horas_lambda = datefin - dateini
-                    horas += horas_lambda.seconds/3600
-                    #minutos = horas_lambda.seconds%3600/60
+                    horas += horas_lambda.seconds
                     dateini = None
-
             last_status = view_pizarron.status
 
-        return horas
+        return horas/3600
     get_horas_reales.short_description = 'Hrs Reales'
 
     def get_last_log(self):
