@@ -31,7 +31,7 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
         list_proyectos = list_proyectos.filter(id=proyecto_id)
 
     for view_proyecto in list_proyectos:
-        list_tareas = tarea.objects.filter(status=0, modulo__proyecto=view_proyecto).order_by('fecha_inicial', 'fecha_final')
+        list_tareas = tarea.objects.filter(modulo__proyecto=view_proyecto).order_by('fecha_inicial', 'fecha_final')
         
         if user_id:
             list_tareas = list_tareas.filter(responsable_id=user_id)
@@ -40,16 +40,22 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
         colors = []
         horas_estimatadas_totales = 0
         horas_reales_totales = 0
-        total_tareas = {0:0, 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0}
+        numero_tareas_totales = list_tareas.count()
+        total_tareas = {0:0, 1:0, 2:0, 3:0, 4: 0, 5:0, 6:0, 7:0}
         involucrados = []
 
+        # Solo tareas abiertas
+        list_tareas = list_tareas.filter(status=0)
+
         for view_tarea in list_tareas:
+            # Para no afectar a google en el diagrama de Gantt
             if view_tarea.fecha_inicial >= view_tarea.fecha_final:
                 continue
 
             horas_estimatadas_totales += view_tarea.get_horas_estimadas()
             horas_reales_totales += view_tarea.get_horas_reales()
             total_tareas[view_tarea.get_last_log().status] += 1
+
             if view_tarea.responsable not in involucrados:
                 involucrados.append(view_tarea.responsable)
 
@@ -71,6 +77,8 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
             colors.append(view_tarea.get_color_status())
         
         n = len(rows)
+        
+        print total_tareas
 
         if n > 1:
             all_proyectos.append({
@@ -85,8 +93,8 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
                         'fin': list_tareas[n-1].created_at.strftime('%d/%m/%Y %H:%M')
                     },
                     'tareas': {
-                        'totales': n,
-                        'terminadas': total_tareas[4],
+                        'totales': numero_tareas_totales,
+                        'terminadas': numero_tareas_totales-n,
                         'pendientes': total_tareas[1],
                         'proceso': total_tareas[2],
                         'pausadas': total_tareas[3],
