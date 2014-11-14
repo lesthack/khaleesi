@@ -219,7 +219,6 @@ class issueAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj and not request.user.is_superuser:
             self.actions = None
-            self.exclude = []
             readonly_fields = ()
 
             if obj.asignado_a  == request.user:
@@ -231,7 +230,6 @@ class issueAdmin(admin.ModelAdmin):
 
             return self.readonly_fields + readonly_fields
         elif obj and request.user.is_superuser:
-            self.exclude = []
             if not obj.is_closed():
                 return self.readonly_fields + ('id', 'created_at', 'updated_at')
             else:
@@ -242,8 +240,10 @@ class issueAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         if obj:
             self.change_form_template = 'issue_view_form.html'
+        else:
+            self.change_form_template = 'issue_new_form.html'
         return super(issueAdmin, self).get_form(request, obj, **kwargs)
-
+    
     def suit_row_attributes(self, obj, request):
         COLORS = (
             ('info', 'info', 'warning'),
@@ -257,7 +257,6 @@ class issueAdmin(admin.ModelAdmin):
             row_class = 'success'
 
         return {'class': row_class, 'data': obj.id}
-
 
     def save_model(self, request, obj, form, change):
         if change:

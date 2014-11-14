@@ -1,7 +1,7 @@
 {% extends "admin/change_form.html" %}
 {% block after_field_sets %}
-<script src="/static/wysihtml5/parser_rules/advanced.js"></script>
-<script src="/static/wysihtml5/dist/wysihtml5-0.3.0.min.js"></script>
+<script src="/static/js/advanced.js"></script>
+<script src="/static/js/wysihtml5-0.3.0.min.js"></script>
 <style>
   .wysihtml5-command-active {
     font-weight: bold;
@@ -26,6 +26,60 @@
   }
 </style>
 {% if adminform.form.instance.id %}
+    {% if not user.is_superuser %}
+    <fieldset class="module aligned first">
+        <div class="control-group form-row field-descripcion-2 ">
+            <div>
+                <div class="control-label">
+                    <label>Descripcion:</label>
+                </div>
+                <div class="controls">
+                    {{ adminform.form.instance.descripcion|safe|linebreaks }}
+                </div>
+            </div>
+        </div>
+    </fieldset>
+    {% else %}
+    <div id="toolbar" style="display: none;">
+        <a data-wysihtml5-command="bold" title="CTRL+B">bold</a> |
+        <a data-wysihtml5-command="italic" title="CTRL+I">italic</a> |
+        <a data-wysihtml5-command="createLink">insert link</a> |
+        <a data-wysihtml5-command="insertImage">insert image</a> |
+        <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h1">h1</a> |
+        <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h2">h2</a> |
+        <a data-wysihtml5-command="insertUnorderedList">insertUnorderedList</a> |
+        <a data-wysihtml5-command="insertOrderedList">insertOrderedList</a> |
+        <a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="red">red</a> |
+        <a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="green">green</a> |
+        <a data-wysihtml5-command="foreColor" data-wysihtml5-command-value="blue">blue</a> |
+        <a data-wysihtml5-command="insertSpeech">speech</a>
+        <a data-wysihtml5-action="change_view">switch to html view</a>
+        
+        <div data-wysihtml5-dialog="createLink" style="display: none;">
+          <label>
+            Link:
+            <input data-wysihtml5-dialog-field="href" value="http://">
+          </label>
+          <a data-wysihtml5-dialog-action="save">OK</a>&nbsp;<a data-wysihtml5-dialog-action="cancel">Cancel</a>
+        </div>
+        
+        <div data-wysihtml5-dialog="insertImage" style="display: none;">
+          <label>
+            Image:
+            <input data-wysihtml5-dialog-field="src" value="http://">
+          </label>
+          <label>
+            Align:
+            <select data-wysihtml5-dialog-field="className">
+              <option value="">default</option>
+              <option value="wysiwyg-float-left">left</option>
+              <option value="wysiwyg-float-right">right</option>
+            </select>
+          </label>
+          <a data-wysihtml5-dialog-action="save">OK</a>&nbsp;<a data-wysihtml5-dialog-action="cancel">Cancel</a>
+        </div>  
+    </div>
+    {% endif %}
     {% if not adminform.form.instance.is_closed %}
     <fieldset class="module aligned first">
       <div class="control-group form-row field-nota ">
@@ -34,7 +88,7 @@
                 <label class="required" for="id_nota">Nota:</label>
             </div>
             <div class="controls">
-                <div id="toolbar" style="display: none;">
+                <div id="toolbar_nota" style="display: none;">
                     <a data-wysihtml5-command="bold" title="CTRL+B">bold</a> |
                     <a data-wysihtml5-command="italic" title="CTRL+I">italic</a> |
                     <a data-wysihtml5-command="createLink">insert link</a> |
@@ -108,9 +162,20 @@
     {% endfor %}
     </div>
 <script>
+    {% if not user.is_superuser %}
+        $(".field-descripcion").hide();
+    {% else %}
+        $("#id_descripcion").css('width','90%').before($("#toolbar"));
+
+        var editor = new wysihtml5.Editor("id_descripcion", { 
+          toolbar:      "toolbar", // id of toolbar element
+          stylesheets: "/static/css/stylesheet.css",
+          parserRules:  wysihtml5ParserRules // defined in parser rules set 
+        });
+    {% endif %}
 	var editor = new wysihtml5.Editor("id_nota", { 
-	  toolbar:      "toolbar", // id of toolbar element
-	  stylesheets: "/static/wysihtml5/examples/css/stylesheet.css",
+	  toolbar:      "toolbar_nota", // id of toolbar element
+	  stylesheets: "/static/css/stylesheet.css",
 	  parserRules:  wysihtml5ParserRules // defined in parser rules set 
 	});
 </script>
