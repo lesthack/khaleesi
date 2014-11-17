@@ -2,6 +2,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.html import format_html
+from django.utils.html import strip_tags
 
 class proyecto(models.Model):
     proyecto = models.CharField(max_length=100)
@@ -261,6 +262,15 @@ class issue(models.Model):
 
     def __unicode__(self):
         return '{0}'.format(self.id)
+
+    def get_descripcion(self):
+        sizestr = 80
+        if len(self.descripcion) < sizestr:
+            return strip_tags(self.descripcion)
+        return strip_tags(self.descripcion[0:sizestr]) + '...'
+    get_descripcion.short_description = 'Descripcion'
+    get_descripcion.allow_tags = True
+    get_descripcion.admin_order_field = 'descripcion'
 
     def get_status(self):
         return self.STATUS_CHOICES[self.status][1]
