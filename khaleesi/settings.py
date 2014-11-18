@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
+    'django_crontab',
     'suit_redactor',
     'changelog',
     'track',
@@ -67,6 +68,10 @@ USE_TZ = True
 
 STATIC_ROOT = BASE_DIR + '/static'
 STATIC_URL = '/static/'
+
+CRONJOBS = [
+    ('* * * * *', 'track.cron.mail_sending'),
+]
 
 SUIT_CONFIG = {
     'ADMIN_NAME': 'Khaleesi',
