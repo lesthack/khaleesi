@@ -3,6 +3,12 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.html import format_html
 from django.utils.html import strip_tags
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import get_template
+from django.template import Context
+from khaleesi.sensible import *
+from datetime import datetime
+import ast
 
 class proyecto(models.Model):
     proyecto = models.CharField(max_length=100)
@@ -311,3 +317,38 @@ class issue_nota(models.Model):
 
     def __unicode__(self):
         return '{0}'.format(self.id)
+
+class mail(models.Model):
+    """list email to send"""
+    subject = models.CharField(max_length=100)
+    context = models.TextField(null=True, blank=True, default=None)
+    body = models.TextField(null=True, blank=True, default=None)
+    template = models.CharField(null=True, blank=True, default=None, max_length=100)
+    send_to = models.ForeignKey(User,blank=True,null=True,related_name='email_send_to')
+    sended = models.BooleanField(default=False)
+    error = models.BooleanField(default=False)
+    error_description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User,blank=True, null=True,related_name='email_created_by')
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+      return '{}'.format(self.id)
+
+    def send(self):
+        try:
+            if self.context:
+                template_html = get_template(str(self.template))
+                html_content = template_html.render(Context(ast.literal_eval(self.context)))
+            else:
+                html_content = self.body
+            msg_email = EmailMultiAlternatives(self.subject, html_content, EMAIL_DEFAULT, [self.send_to.email, ])
+            msg_email.attach_alternative(html_content,'text/html')
+            msg_email.send()
+            self.sended = True
+        except Exception, e:
+            self.sended = False
+            self.error = True
+            self.error_description = 'the error %s' % (str(e))
+        self.save()
+
