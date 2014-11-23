@@ -14,13 +14,13 @@
 {% block contenido %}
     <h4>Detalles:</h4>
     <div class="resume">
-        <p><span class="field">ID</span> : <b>{{ issue.id }}</b></p>
-        <p><span class="field">Proyecto</span> : <b>{{ issue.modulo.proyecto }}</b></p>
-        <p><span class="field">Modulo</span> : <b>{{ issue.modulo.modulo }}</b></p>
-        <p><span class="field">Tipo</span> : <b>{{ issue.tipo_issue }}</b></p>
-        <p><span class="field">Urgencia</span> : <b>{{ issue.get_urgencia }}</b></p>
-        <p><span class="field">Importancia</span> : <b>{{ issue.get_importancia }}</b></p>
-        <p><span class="field">Fecha</span> : <b>{{ issue.created_at }}</b></p>
+        <span class="field">ID</span> : <b>{{ issue.id }}</b><br/>
+        <span class="field">Proyecto</span> : <b>{{ issue.modulo.proyecto }}</b><br/>
+        <span class="field">Modulo</span> : <b>{{ issue.modulo.modulo }}</b><br/>
+        <span class="field">Tipo</span> : <b>{{ issue.tipo_issue }}</b><br/>
+        <span class="field">Urgencia</span> : <b>{{ issue.get_urgencia }}</b><br/>
+        <span class="field">Importancia</span> : <b>{{ issue.get_importancia }}</b><br/>
+        <span class="field">Fecha</span> : <b>{{ issue.created_at }}</b><br/>
     </div>
     <br>
     <h4>Descripción</h4>

@@ -352,3 +352,35 @@ class mail(models.Model):
             self.error_description = 'the error %s' % (str(e))
         self.save()
 
+# User
+def user_get_tareas(self, status=[0,1]):
+    """
+        Tareas de un usuario.
+        Filtro:
+            status = [0] Abiertas
+            status = [1] Cerradas
+            status = [0,1] Todas
+    """
+    return tarea.objects.filter(responsable=self, status__in=status).order_by('fecha_inicial','fecha_final','horas_estimadas')
+
+def user_get_tareas_abiertas(self):
+    return self.get_tareas(status=[0])
+
+def user_get_tareas_cerradas(self):
+    return self.get_tareas(status=[1])
+
+def user_get_issues(self, status=[0,1,2,3]):
+    return issue.objects.filter(asignado_a=self, status__in=status).order_by('status', '-urgencia', '-importancia', 'created_at')
+
+def user_get_issues_abiertos(self):
+    return self.get_issues(status=[0])
+
+def user_get_10_issues_abiertos(self):
+    return self.get_issues_abiertos()[0:10]
+
+User.add_to_class('get_tareas', user_get_tareas)
+User.add_to_class('get_tareas_abiertas', user_get_tareas_abiertas)
+User.add_to_class('get_tareas_cerradas', user_get_tareas_cerradas)
+User.add_to_class('get_issues', user_get_issues)
+User.add_to_class('get_issues_abiertos', user_get_issues_abiertos)
+User.add_to_class('get_10_issues_abiertos', user_get_10_issues_abiertos)

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.contrib.admin import site
@@ -5,14 +6,16 @@ from django.conf.urls import patterns
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from track.models import *
+from datetime import datetime
 import random
 
 def my_view(request):
+    hoy = datetime.now()
     return render_to_response(
-        'base_email_issue.html', 
+        'email_daily.html',        
         {
-            'issue': issue.objects.get(id=221),
-            'es_nuevo': False
+            'user': User.objects.get(id=2),
+            'hoy': hoy,
         },
         context_instance=RequestContext(request)
     )
