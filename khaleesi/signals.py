@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.db.models.signals import post_save
-#from django.template import Context
-#from django.template.loader import get_template
-#from django.core.mail import EmailMultiAlternatives
 from django.dispatch import receiver
 from track.models import *
 

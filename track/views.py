@@ -6,8 +6,8 @@ from django.conf.urls import patterns
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from track.models import *
+from track.quotes import *
 from datetime import datetime
-import random
 
 def my_view(request):
     hoy = datetime.now()
@@ -16,6 +16,7 @@ def my_view(request):
         {
             'user': User.objects.get(id=2),
             'hoy': hoy,
+            'quote': random_quote(),
         },
         context_instance=RequestContext(request)
     )

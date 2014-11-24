@@ -3,15 +3,17 @@ from track.models import *
 from django.template.loader import get_template
 from django.template import Context
 from datetime import datetime
-import random
+from track.quotes import *
 
 def mail_daily():
-    for user in User.objects.filter(id=2):
+    list_users = [2,4,5]
+    for user in User.objects.filter(id__in=list_users):
         hoy = datetime.now()
         try:
             c = Context({
                 'hoy': hoy,
                 'user': user,
+                'quote': random_quote(),
             })
             html_template = get_template('email_daily.html')
             html_content = html_template.render(c)
