@@ -30,7 +30,7 @@ def mail_daily():
             new_mail = mail()
             new_mail.subject = 'Actividades {}'.format(hoy.strftime('%B %d, %Y'))
             new_mail.body = html_content
-            new_mail.send_to = User.objects.get(id=2)
+            new_mail.send_to = user
             new_mail.save()
         except Exception, e:
             print 'Error: ',e
