@@ -64,5 +64,5 @@ quotes = [
 ]
 
 def random_quote():
-    return '{}'.format(quotes[random.randrange(0, len(quotes))])
+    return quotes[random.randrange(0, len(quotes))]
 

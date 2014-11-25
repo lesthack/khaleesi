@@ -6,9 +6,19 @@ from datetime import datetime
 from track.quotes import *
 
 def mail_daily():
-    list_users = [2,4,5]
+    hoy = datetime.now()
+    date_exceptions = ['31/12/2014']
+    list_users = [
+        2, # jorgeluis
+        4, # edgar
+        5, # luis
+        6, # diana
+    ]
+
+    if hoy.weekday() not in [0,1,2,3,4] or hoy.strftime('%d/%m/%Y') in date_exceptions:
+        return False
+
     for user in User.objects.filter(id__in=list_users):
-        hoy = datetime.now()
         try:
             c = Context({
                 'hoy': hoy,
@@ -20,10 +30,12 @@ def mail_daily():
             new_mail = mail()
             new_mail.subject = 'Actividades {}'.format(hoy.strftime('%B %d, %Y'))
             new_mail.body = html_content
-            new_mail.send_to = user
+            new_mail.send_to = User.objects.get(id=2)
             new_mail.save()
         except Exception, e:
             print 'Error: ',e
+
+    return True
 
 def mail_sending():
     emails_to_send = mail.objects.filter(sended=False,error=False)
