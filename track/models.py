@@ -47,7 +47,7 @@ class modulo(models.Model):
     deleted_at = models.DateTimeField(blank=True, null=True, default=None)
 
     def __unicode__(self):
-        return '{0}->{1}'.format(self.proyecto, self.modulo)
+        return u'{0}->{1}'.format(self.proyecto, self.modulo)
 
     def proyecto_link(self):
         return format_html('<a href="/admin/track/proyecto/{0}/">{1}</a>', self.proyecto.id, self.proyecto)
@@ -56,19 +56,19 @@ class modulo(models.Model):
     proyecto_link.admin_order_field = 'proyecto'
 
     def issues_resueltos(self):
-        return format_html('<a href="/admin/track/issue/?q=&modulo__modulo={0}&status__exact=1">{1}</a>', self.modulo, issue.objects.filter(modulo=self, status=1).count())
+        return format_html(u'<a href="/admin/track/issue/?q=&modulo__modulo={0}&status__exact=1">{1}</a>', self.modulo, issue.objects.filter(modulo=self, status=1).count())
     issues_resueltos.short_description = 'Resueltos'
     
     def issues_abiertos(self):
-        return format_html('<a href="/admin/track/issue/?q=&status__exact=0">{0}</a>', issue.objects.filter(modulo=self, status=0).count())
+        return format_html(u'<a href="/admin/track/issue/?q=&status__exact=0">{0}</a>', issue.objects.filter(modulo=self, status=0).count())
     issues_abiertos.short_description = 'Abiertos'
 
     def issues_abandonados(self):
-        return format_html('<a href="/admin/track/issue/?q=&status__exact=2">{0}</a>', issue.objects.filter(modulo=self, status=2).count())
+        return format_html(u'<a href="/admin/track/issue/?q=&status__exact=2">{0}</a>', issue.objects.filter(modulo=self, status=2).count())
     issues_abandonados.short_description = 'Abandonados'
 
     def issues_cancelados(self):
-        return format_html('<a href="/admin/track/issue/?q=&status__exact=3">{0}</a>', issue.objects.filter(modulo=self, status=3).count())
+        return format_html(u'<a href="/admin/track/issue/?q=&status__exact=3">{0}</a>', issue.objects.filter(modulo=self, status=3).count())
     issues_cancelados.short_description = 'Cancelados'
 
 class tarea(models.Model):

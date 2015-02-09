@@ -13,6 +13,7 @@ def mail_daily():
         4, # edgar
         5, # luis
         6, # diana
+        7, # salvador
     ]
 
     if hoy.weekday() not in [0,1,2,3,4] or hoy.strftime('%d/%m/%Y') in date_exceptions:
