@@ -43,7 +43,7 @@ def signal_post_save_tarea(sender, instance, **kwargs):
             new_pizarron.status = 0
             to = instance.responsable
 
-        new_pizarron.log = u'Tarea {} asginada a {}.'.format(instance.id, instance.responsable.username)
+        new_pizarron.log = u'Tarea {} asignada a {}.'.format(instance.id, instance.responsable.username)
         new_pizarron.save()
 
     if to:
@@ -59,3 +59,4 @@ def signal_post_save_tarea(sender, instance, **kwargs):
         new_mail.body = html_content
         new_mail.send_to = to
         new_mail.save()
+        
