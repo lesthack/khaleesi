@@ -1,5 +1,4 @@
 Django==1.7.1
-MySQL-python==1.2.5
 argparse==1.2.1
 django-suit==0.2.11
 django-suit-redactor==0.0.2
