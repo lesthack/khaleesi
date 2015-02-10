@@ -29,13 +29,33 @@ def send_update(sender, instance, **kwargs):
 
 @receiver(post_save, sender=tarea)
 def signal_post_save_tarea(sender, instance, **kwargs):
-    if kwargs['created']: # Si es nuevo
+
+    subject = u'Khaleesi: {0} {1} {2}'.format("Tarea", instance.id, instance.get_status())
+    to = None
+
+    if kwargs['created']: 
         new_pizarron = pizarron(tarea=instance, created_by=instance.created_by)
     
         if instance.created_by == instance.responsable:
             new_pizarron.status = 1
+            to = instance.created_by
         else:
             new_pizarron.status = 0
+            to = instance.responsable
 
         new_pizarron.log = u'Tarea {} asginada a {}.'.format(instance.id, instance.responsable.username)
         new_pizarron.save()
+
+    if to:
+        c = Context({
+            'tarea': instance,
+            'es_nuevo': kwargs['created']
+        })
+        template_html = get_template('base_email_tarea.html')
+        html_content = template_html.render(c)
+
+        new_mail = mail()
+        new_mail.subject = subject
+        new_mail.body = html_content
+        new_mail.send_to = to
+        new_mail.save()

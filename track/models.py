@@ -87,7 +87,10 @@ class tarea(models.Model):
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
     created_by = models.ForeignKey(User, blank=True, null=True)
-    
+
+    def get_status(self):
+        return self.STATUS_CHOICES[self.status][1]
+
     def __unicode__(self):
         return '{}'.format(self.id)
 
