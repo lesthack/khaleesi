@@ -46,7 +46,7 @@
         {% endif %}
         </p>
     {% else %}
-        <p>Tienes un total de {{ user.get_tareas_abiertas|length|add:user.get_tareas_abiertas_bloqueadas|length }} tareas abiertas
+        <p>Tienes un total de {{ user.get_tareas_abiertas_cantidad|length }} tareas abiertas
         {% if user.get_tareas_cerradas|length > 0 %} y has finalizado {{ user.get_tareas_cerradas|length }}{% else %} y aun no has finalizado ninguna.{% endif %}</p>
         <p>Este es el resumen:</p>
         <table width="100%" style="margin: 10px;">

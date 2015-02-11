@@ -369,13 +369,14 @@ def user_get_tareas(self, status=[0,1]):
 
 def user_get_tareas_abiertas_bloqueadas(self):
     piz = pizarron.objects.filter(status=5)
-    tareas_b = tarea.objects.filter(responsable=self, status=0, id__in=(p.tarea_id for p in piz)).order_by('fecha_inicial','fecha_final','horas_estimadas')
-    return tareas_b
+    return tarea.objects.filter(responsable=self, status=0, id__in=(p.tarea_id for p in piz)).order_by('fecha_inicial','fecha_final','horas_estimadas')
 
 def user_get_tareas_abiertas(self):
     piz = pizarron.objects.filter(status=5)
-    tareas_nb = tarea.objects.filter(responsable=self, status=0).exclude(id__in=(p.tarea_id for p in piz)).order_by('fecha_inicial','fecha_final','horas_estimadas')
-    return tareas_nb
+    return tarea.objects.filter(responsable=self, status=0).exclude(id__in=(p.tarea_id for p in piz)).order_by('fecha_inicial','fecha_final','horas_estimadas')
+
+def user_get_tareas_abiertas_cantidad(self):
+    return self.get_tareas_abiertas() | self.get_tareas_abiertas_bloqueadas()
 
 def user_get_tareas_cerradas(self):
     return self.get_tareas(status=[1])
@@ -392,6 +393,7 @@ def user_get_10_issues_abiertos(self):
 User.add_to_class('get_tareas', user_get_tareas)
 User.add_to_class('get_tareas_abiertas', user_get_tareas_abiertas)
 User.add_to_class('get_tareas_abiertas_bloqueadas', user_get_tareas_abiertas_bloqueadas)
+User.add_to_class('get_tareas_abiertas_cantidad', user_get_tareas_abiertas_cantidad)
 User.add_to_class('get_tareas_cerradas', user_get_tareas_cerradas)
 User.add_to_class('get_issues', user_get_issues)
 User.add_to_class('get_issues_abiertos', user_get_issues_abiertos)
