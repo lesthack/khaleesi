@@ -7,6 +7,12 @@
 # Scract backups
 *~
 
+# Sublime files
+.sublime-workspace
+
+# Sqlite database
+.sqlite3
+
 # configurations
 *.cnf
 
