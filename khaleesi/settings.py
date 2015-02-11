@@ -86,4 +86,3 @@ SUIT_CONFIG = {
         {'label': 'Gantt', 'url': '/admin/gantt/', 'icon': 'icon-leaf'}
     ]
 }
-

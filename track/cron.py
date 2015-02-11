@@ -8,18 +8,12 @@ from track.quotes import *
 def mail_daily():
     hoy = datetime.now()
     date_exceptions = ['31/12/2014']
-    list_users = [
-        2, # jorgeluis
-        4, # edgar
-        5, # luis
-        6, # diana
-        7, # salvador
-    ]
+    list_users = UserProfile.objects.filter(is_email_active = 0)
 
     if hoy.weekday() not in [0,1,2,3,4] or hoy.strftime('%d/%m/%Y') in date_exceptions:
         return False
 
-    for user in User.objects.filter(id__in=list_users):
+    for user in User.objects.exclude(id__in=(l.user_id for l in list_users)):
         try:
             c = Context({
                 'hoy': hoy,

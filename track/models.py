@@ -9,8 +9,11 @@ from django.template import Context
 from khaleesi.sensible import *
 from datetime import datetime
 import ast
-from django.db.models import Q
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+    is_email_active = models.BooleanField(default=True)
+    
 class proyecto(models.Model):
     proyecto = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True, null=True)
@@ -398,3 +401,4 @@ User.add_to_class('get_tareas_cerradas', user_get_tareas_cerradas)
 User.add_to_class('get_issues', user_get_issues)
 User.add_to_class('get_issues_abiertos', user_get_issues_abiertos)
 User.add_to_class('get_10_issues_abiertos', user_get_10_issues_abiertos)
+

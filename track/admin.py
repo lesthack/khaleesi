@@ -4,6 +4,9 @@ from django.contrib import admin
 from track.models import *
 from track.views import *
 import datetime
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+from track.models import UserProfile
 
 class proyectoForm(forms.ModelForm):
     class Meta:
@@ -275,5 +278,18 @@ class issueAdmin(admin.ModelAdmin):
         
         obj.save()
 
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    can_delete = False
+    verbose_name_plural = 'Información adicional'
+    verbose_name = 'Usuario'
+
+class UserAdmin(UserAdmin):
+    inlines = (UserProfileInline, )
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
+
 # Agregamos vistas personalizadas
 admin.site.get_urls = get_admin_urls(admin.site.get_urls())
+
