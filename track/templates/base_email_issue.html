@@ -1,5 +1,5 @@
 {% extends "base_email.html" %}
-{% block titulo%}Issue {{ issue.id }}{% endblock %}
+{% block titulo%}Issue <a href="http://khaleesi.unisem.mx/admin/track/issue/{{ issue.id }}/">{{ issue.id }}</a>{% endblock %}
 {% block descripcion %}
     {% if es_nuevo and issue.asignado_a == issue.created_by %}
         Al parecer te has asignado un nuevo issue por resolver.
