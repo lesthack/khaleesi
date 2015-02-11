@@ -37,7 +37,7 @@
         <br>Hoy es un buen momento para comenzar a planear. Puedes comenzar a hacerlo dando click <a href="khaleesi.unisem.mx/admin/track/tarea/">aqui</a>.
         {% endif %}
         </p>
-    {% elif user.get_tareas_abiertas|length == 0 %}
+    {% elif user.get_tareas_abiertas|length == 0 and user.get_tareas_abiertas_bloqueadas|length == 0 %}
         <p>Felicidades, parece ser que has terminado tus tareas asignadas. <br/>
         {% if user.get_issues_abiertos|length > 0 %}
         Sin embargo, aun tienes issues abiertos.
@@ -46,8 +46,8 @@
         {% endif %}
         </p>
     {% else %}
-        <p>Tienes un total de {{ user.get_tareas_abiertas|length }} tareas abiertas
-        {% if user.get_tareas_cerradas|length > 0 %} y has finalizado {{ user.get_tareas_cerradas|length }}{% else %} y aun no has finalizado ninguna.{% endif %}.</p>
+        <p>Tienes un total de {{ user.get_tareas_abiertas|length|add:user.get_tareas_abiertas_bloqueadas|length }} tareas abiertas
+        {% if user.get_tareas_cerradas|length > 0 %} y has finalizado {{ user.get_tareas_cerradas|length }}{% else %} y aun no has finalizado ninguna.{% endif %}</p>
         <p>Este es el resumen:</p>
         <table width="100%" style="margin: 10px;">
             <tr>
@@ -62,6 +62,19 @@
                 <th>Último <br>Estatus</th>
             </tr>
             {% for tarea in user.get_tareas_abiertas %}
+            <tr>
+                <td><a href="http://khaleesi.unisem.mx/admin/track/tarea/{{ tarea.id }}/">{{ tarea.id }}</a></td>
+                <td>{{ tarea.modulo.proyecto }}</td>
+                <td>{{ tarea.modulo.modulo }}</td>
+                <td><a href="http://khaleesi.unisem.mx/admin/track/tarea/{{ tarea.id }}/">{{ tarea.nombre }}</a></td>
+                <td>{{ tarea.fecha_inicial|date:"d/m/Y" }}</td>
+                <td>{{ tarea.fecha_final|date:"d/m/Y" }}</td>
+                <td>{{ tarea.horas_estimadas }}</td>
+                <td>{{ tarea.get_horas_reales }}</td>
+                <td>{{ tarea.get_last_status }}</td>
+            </tr>
+            {% endfor %}
+            {% for tarea in user.get_tareas_abiertas_bloqueadas %}
             <tr>
                 <td><a href="http://khaleesi.unisem.mx/admin/track/tarea/{{ tarea.id }}/">{{ tarea.id }}</a></td>
                 <td>{{ tarea.modulo.proyecto }}</td>

@@ -2,6 +2,9 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from track.models import *
+from django.shortcuts import render, render_to_response
+from track.quotes import *
+from django.template import RequestContext
 
 @receiver(post_save, sender=issue)
 def send_update(sender, instance, **kwargs):

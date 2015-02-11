@@ -9,6 +9,7 @@ from django.template import Context
 from khaleesi.sensible import *
 from datetime import datetime
 import ast
+from django.db.models import Q
 
 class proyecto(models.Model):
     proyecto = models.CharField(max_length=100)
@@ -366,8 +367,15 @@ def user_get_tareas(self, status=[0,1]):
     """
     return tarea.objects.filter(responsable=self, status__in=status).order_by('fecha_inicial','fecha_final','horas_estimadas')
 
+def user_get_tareas_abiertas_bloqueadas(self):
+    piz = pizarron.objects.filter(status=5)
+    tareas_b = tarea.objects.filter(responsable=self, status=0, id__in=(p.tarea_id for p in piz)).order_by('fecha_inicial','fecha_final','horas_estimadas')
+    return tareas_b
+
 def user_get_tareas_abiertas(self):
-    return self.get_tareas(status=[0])
+    piz = pizarron.objects.filter(status=5)
+    tareas_nb = tarea.objects.filter(responsable=self, status=0).exclude(id__in=(p.tarea_id for p in piz)).order_by('fecha_inicial','fecha_final','horas_estimadas')
+    return tareas_nb
 
 def user_get_tareas_cerradas(self):
     return self.get_tareas(status=[1])
@@ -383,6 +391,7 @@ def user_get_10_issues_abiertos(self):
 
 User.add_to_class('get_tareas', user_get_tareas)
 User.add_to_class('get_tareas_abiertas', user_get_tareas_abiertas)
+User.add_to_class('get_tareas_abiertas_bloqueadas', user_get_tareas_abiertas_bloqueadas)
 User.add_to_class('get_tareas_cerradas', user_get_tareas_cerradas)
 User.add_to_class('get_issues', user_get_issues)
 User.add_to_class('get_issues_abiertos', user_get_issues_abiertos)
