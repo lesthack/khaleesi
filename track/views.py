@@ -6,17 +6,17 @@ from django.conf.urls import patterns
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from track.models import *
-from track.quotes import *
 from datetime import datetime
 
 def my_view(request):
     hoy = datetime.now()
+    c = cita()
     return render_to_response(
         'email_daily.html',        
         {
             'user': User.objects.get(id=2),
             'hoy': hoy,
-            'quote': random_quote(),
+            'quote': c.cita_aleatoria().descripcion,
         },
         context_instance=RequestContext(request)
     )

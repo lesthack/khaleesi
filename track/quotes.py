@@ -65,4 +65,4 @@ quotes = [
 
 def random_quote():
     return quotes[random.randrange(0, len(quotes))]
-
+    

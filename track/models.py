@@ -9,10 +9,12 @@ from django.template import Context
 from khaleesi.sensible import *
 from datetime import datetime
 import ast
+import random
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     is_email_active = models.BooleanField(default=True)
+    token = models.CharField(max_length=50, null=True)
     
 class proyecto(models.Model):
     proyecto = models.CharField(max_length=100)
@@ -358,6 +360,15 @@ class mail(models.Model):
             self.error = True
             self.error_description = 'the error %s' % (str(e))
         self.save()
+
+class cita(models.Model):
+    descripcion = models.TextField()
+
+    def cita_aleatoria(self):
+        return cita.objects.get(id = random.randint(0, cita.objects.all().count() - 1))
+
+    def __unicode__(self):
+        return self.descripcion
 
 # User
 def user_get_tareas(self, status=[0,1]):

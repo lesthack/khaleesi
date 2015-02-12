@@ -278,6 +278,20 @@ class issueAdmin(admin.ModelAdmin):
         
         obj.save()
 
+class citaForm(forms.ModelForm):
+    class Meta:
+        model = cita
+
+@admin.register(cita)
+class citaAdmin(admin.ModelAdmin):
+    list_display = ['id', 'descripcion']
+    list_display_links = ['id']
+    search_fields = ['descripcion']
+    form = citaForm
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
