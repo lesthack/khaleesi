@@ -35,17 +35,20 @@ def signal_post_save_tarea(sender, instance, **kwargs):
 
     if kwargs['created']: 
         new_pizarron = pizarron(tarea=instance, created_by=instance.created_by)
-    
+
+        to = instance.created_by
         if instance.created_by == instance.responsable:
             new_pizarron.status = 1
-            to = instance.created_by
         else:
             new_pizarron.status = 0
-            to = instance.responsable
 
         new_pizarron.log = u'Tarea {} asignada a {}.'.format(instance.id, instance.responsable.username)
         new_pizarron.save()
 
+    else:
+        if instance.get_last_status_number > 3:
+            to = instance.created_by
+    
     if to:
         c = Context({
             'tarea': instance,

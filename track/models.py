@@ -155,6 +155,12 @@ class tarea(models.Model):
         except:
             return 'Sin actividad'
 
+    def get_last_status_number(self):
+        try:
+            return self.get_last_log().get_status_number()
+        except:
+            return -1
+
     def get_pizarron(self):
         return format_html(u'<span style="color: {1};">{0}</span>'.format(self.get_last_status(), self.get_color_status()))
     get_pizarron.short_description = 'Pizarrón'
@@ -211,6 +217,9 @@ class pizarron(models.Model):
 
     def get_status(self):
         return self.STATUS_CHOICES[self.status][1]
+
+    def get_status_number(self):
+        return self.STATUS_CHOICES[self.status][0]
 
     def proyecto_link(self):
         return self.tarea.proyecto_link()
