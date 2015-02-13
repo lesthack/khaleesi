@@ -14,7 +14,7 @@ import random
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     is_email_active = models.BooleanField(default=True)
-    token = models.CharField(max_length=50, null=True)
+    token = models.CharField(max_length=50, blank=True)
     
 class proyecto(models.Model):
     proyecto = models.CharField(max_length=100)
