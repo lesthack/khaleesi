@@ -3,7 +3,7 @@ from django.shortcuts import render, render_to_response
 from django.template import RequestContext
 from django.contrib.admin import site
 from django.conf.urls import patterns
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.core.exceptions import PermissionDenied
 from track.models import *
 from datetime import datetime
@@ -20,6 +20,39 @@ def my_view(request):
         },
         context_instance=RequestContext(request)
     )
+
+def json_board(request):
+
+    json_data = {
+        'user': {
+            'id': request.user.id,
+            'username': request.user.username,
+            'first_name': request.user.first_name,
+            'last_name': request.user.last_name
+        },
+        'tasks': [
+            {
+                'id': t.id,
+                'nombre': t.nombre,
+                'descripcion': t.descripcion,
+                'fecha_inicial': t.fecha_inicial,
+                'fecha_final': t.fecha_final,
+                'horas_estimadas': t.get_horas_estimadas(),
+                'horas_registradas': t.get_horas_reales(),
+                'hora_inicial_proceso': t.get_last_log().created_at,
+                'proyecto': {
+                    'id': t.modulo.proyecto.id,
+                    'nombre': t.modulo.proyecto.proyecto
+                },
+                'modulo': {
+                    'id': t.modulo.id,
+                    'nombre': t.modulo.modulo
+                }
+            } 
+            for t in request.user.get_tareas_activas()
+        ]
+    }
+    return JsonResponse(json_data)
 
 def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
     """
@@ -170,6 +203,7 @@ def get_admin_urls(urls):
     def get_urls():
         my_urls = patterns('',
             (r'^my_view/$', site.admin_view(my_view)),
+            (r'^json/board/$', site.admin_view(json_board)),
             (r'^gantt/$', site.admin_view(gantt_all)),
             (r'^track/proyecto/(?P<proyecto_id>\d+)/gantt/$', site.admin_view(gantt_por_proyecto)),
             (r'^track/user/(?P<user_id>\d+)/gantt/$', site.admin_view(gantt_por_usuario)),
