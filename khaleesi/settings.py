@@ -71,7 +71,7 @@ STATIC_URL = '/static/'
 
 CRONJOBS = [
     ('* * * * *', 'track.cron.mail_sending'),
-    ('0 8 * * *', 'track.cron.mail_daily'),
+    ('30 18 * * *', 'track.cron.mail_daily'),
 ]
 
 SUIT_CONFIG = {
