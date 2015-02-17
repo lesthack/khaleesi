@@ -81,7 +81,7 @@ SUIT_CONFIG = {
             'objeto', 'cambio',
         )},
         {'app': 'track', 'icon':'icon-tasks', 'label': 'Dashboard', 'models': (
-            'proyecto', 'modulo', 'tarea', 'issue', 'pizarron', 
+            'proyecto', 'modulo', 'tarea', 'issue', 'pizarron', 'cita'
         )},
         {'label': 'Gantt', 'url': '/admin/gantt/', 'icon': 'icon-leaf'}
     ]
