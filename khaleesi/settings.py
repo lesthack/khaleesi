@@ -83,6 +83,7 @@ SUIT_CONFIG = {
         {'app': 'track', 'icon':'icon-tasks', 'label': 'Dashboard', 'models': (
             'proyecto', 'modulo', 'tarea', 'issue', 'pizarron', 'cita'
         )},
-        {'label': 'Gantt', 'url': '/admin/gantt/', 'icon': 'icon-leaf'}
+        {'label': 'Gantt', 'url': '/admin/gantt/', 'icon': 'icon-leaf'},
+        {'label': 'Chrome Extension', 'url': 'https://chrome.google.com/webstore/detail/khaleesi-chrome-extension/lbgkpaeeldcdiapihpbflkjgaakmebjb?utm_source=chrome-app-launcher-info-dialog', 'icon': 'icon-fire'}
     ]
 }
