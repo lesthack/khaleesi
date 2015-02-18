@@ -84,6 +84,7 @@ SUIT_CONFIG = {
             'proyecto', 'modulo', 'tarea', 'issue', 'pizarron', 'cita'
         )},
         {'label': 'Gantt', 'url': '/admin/gantt/', 'icon': 'icon-leaf'},
-        {'label': 'Chrome Extension', 'url': 'https://chrome.google.com/webstore/detail/khaleesi-chrome-extension/lbgkpaeeldcdiapihpbflkjgaakmebjb?utm_source=chrome-app-launcher-info-dialog', 'icon': 'icon-fire'}
+        {'label': 'Chrome Extension', 'url': 'https://chrome.google.com/webstore/detail/khaleesi-chrome-extension/lbgkpaeeldcdiapihpbflkjgaakmebjb?utm_source=chrome-app-launcher-info-dialog', 'icon': 'icon-fire'},
+        {'label': 'Firefox Extension', 'url': 'https://drive.google.com/open?id=0B3lVvLj-naJYWW1nUTRlQWZnS0VITC1LWE8yMFo0NFMtR3Jv&authuser=0', 'icon': 'icon-fire'}
     ]
 }
