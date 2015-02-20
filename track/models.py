@@ -14,7 +14,7 @@ import random
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     is_email_active = models.BooleanField(default=True)
-    token = models.CharField(max_length=50, blank=True)
+    token = models.CharField(max_length=50, blank=True, null=True)
     
 class proyecto(models.Model):
     proyecto = models.CharField(max_length=100)
@@ -372,6 +372,12 @@ class mail(models.Model):
 
 class cita(models.Model):
     descripcion = models.TextField()
+    created_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
+    created_by = models.ForeignKey(User, blank=True, null=True)
+    deleted = models.BooleanField(default=False)
+    deleted_by = models.ForeignKey(User, blank=True, null=True, default=None, related_name='cita_deleted_by')
+    deleted_at = models.DateTimeField(blank=True, null=True, default=None)
 
     def cita_aleatoria(self):
         return cita.objects.get(id = random.randint(0, cita.objects.all().count() - 1))
