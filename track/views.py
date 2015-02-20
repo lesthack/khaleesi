@@ -22,7 +22,9 @@ def my_view(request):
     )
 
 def json_board(request):
-
+    """
+        json_board
+    """
     json_data = {
         'user': {
             'id': request.user.id,
