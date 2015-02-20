@@ -419,6 +419,16 @@ def user_get_10_issues_abiertos(self):
 def user_get_tareas_activas(self):
     return tarea.objects.raw('SELECT id FROM track_tarea WHERE status=0 AND (SELECT status FROM track_pizarron WHERE tarea_id=track_tarea.id ORDER BY created_at DESC LIMIT 1 OFFSET 0)=2 AND responsable_id={user_id};'.format(user_id=self.id))
 
+def user_get_tareas_recientes(self, n=3):
+    return tarea.objects.raw('SELECT track_tarea.* \
+            FROM track_tarea \
+            WHERE \
+                    responsable_id = {user_id} and status = 0 \
+                AND (SELECT status FROM track_pizarron WHERE tarea_id=track_tarea.id ORDER BY created_at DESC LIMIT 1 OFFSET 0) IN (1,3) \
+                AND (SELECT count(*) FROM track_pizarron WHERE tarea_id=track_tarea.id) > 1 \
+            ORDER BY (SELECT updated_at FROM track_pizarron WHERE tarea_id=track_tarea.id ORDER BY created_at DESC LIMIT 1 OFFSET 0) DESC \
+            LIMIT {n} OFFSET 0'.format(user_id=self.id, n=n))
+
 User.add_to_class('get_tareas', user_get_tareas)
 User.add_to_class('get_tareas_abiertas', user_get_tareas_abiertas)
 User.add_to_class('get_tareas_abiertas_bloqueadas', user_get_tareas_abiertas_bloqueadas)
@@ -428,4 +438,5 @@ User.add_to_class('get_issues', user_get_issues)
 User.add_to_class('get_issues_abiertos', user_get_issues_abiertos)
 User.add_to_class('get_10_issues_abiertos', user_get_10_issues_abiertos)
 User.add_to_class('get_tareas_activas', user_get_tareas_activas)
+User.add_to_class('get_tareas_recientes', user_get_tareas_recientes)
 

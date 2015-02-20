@@ -42,6 +42,7 @@ def json_board(request):
                 'horas_estimadas': t.get_horas_estimadas(),
                 'horas_registradas': t.get_horas_reales(),
                 'hora_inicial_proceso': t.get_last_log().created_at,
+                'status_id': t.get_last_log().status,
                 'proyecto': {
                     'id': t.modulo.proyecto.id,
                     'nombre': t.modulo.proyecto.proyecto
@@ -52,6 +53,28 @@ def json_board(request):
                 }
             } 
             for t in request.user.get_tareas_activas()
+        ],
+        'last_tasks': [
+            {
+                'id': t.id,
+                'nombre': t.nombre,
+                'descripcion': t.descripcion,
+                'fecha_inicial': t.fecha_inicial,
+                'fecha_final': t.fecha_final,
+                'horas_estimadas': t.get_horas_estimadas(),
+                'horas_registradas': t.get_horas_reales(),
+                'hora_inicial_proceso': t.get_last_log().created_at,
+                'status_id': t.get_last_log().status,
+                'proyecto': {
+                    'id': t.modulo.proyecto.id,
+                    'nombre': t.modulo.proyecto.proyecto
+                },
+                'modulo': {
+                    'id': t.modulo.id,
+                    'nombre': t.modulo.modulo
+                }
+            } 
+            for t in request.user.get_tareas_recientes()
         ]
     }
     return JsonResponse(json_data)
