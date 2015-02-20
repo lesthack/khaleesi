@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from track.models import *
 from django.template.loader import get_template
 from django.template import Context
 from datetime import datetime
+from track.models import *
 
 def mail_daily():
     hoy = datetime.now()
@@ -18,7 +18,7 @@ def mail_daily():
             c = Context({
                 'hoy': hoy,
                 'user': user,
-                'quote': q.cita_aleatoria().descripcion,
+                'quote': cita.objects.filter(deleted=False).order_by('?')[0],
             })
             html_template = get_template('email_daily.html')
             html_content = html_template.render(c)

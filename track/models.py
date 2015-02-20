@@ -379,9 +379,6 @@ class cita(models.Model):
     deleted_by = models.ForeignKey(User, blank=True, null=True, default=None, related_name='cita_deleted_by')
     deleted_at = models.DateTimeField(blank=True, null=True, default=None)
 
-    def cita_aleatoria(self):
-        return cita.objects.get(id = random.randint(0, cita.objects.all().count() - 1))
-
     def __unicode__(self):
         return self.descripcion
 

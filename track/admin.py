@@ -281,16 +281,35 @@ class issueAdmin(admin.ModelAdmin):
 class citaForm(forms.ModelForm):
     class Meta:
         model = cita
+        exclude = ['created_by','deleted','deleted_by','deleted_at']
 
 @admin.register(cita)
 class citaAdmin(admin.ModelAdmin):
-    list_display = ['id', 'descripcion']
+    list_display = ['id', 'descripcion', 'deleted', 'created_by', 'created_at', 'updated_at']
     list_display_links = ['id']
-    search_fields = ['descripcion']
+    list_filter = ['created_by', 'created_at']
+    search_fields = ['descripcion', 'created_by__username']
     form = citaForm
 
     def save_model(self, request, obj, form, change):
         obj.save()
+
+    def save_model(self, request, obj, form, change):
+        if change:
+            if obj.deleted == False:
+                obj.deleted_by = None
+                obj.deleted_at = None
+        else:
+            obj.created_by = request.user
+        obj.save()
+    
+    def delete_model(self, request, obj):
+        obj.deleted = True
+        obj.deleted_by = request.user
+        obj.deleted_at = datetime.datetime.now()
+        obj.save()
+
+        return False
 
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
