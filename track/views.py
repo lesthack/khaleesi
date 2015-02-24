@@ -4,6 +4,7 @@ from django.template import RequestContext
 from django.contrib.admin import site
 from django.conf.urls import patterns
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import PermissionDenied
 from django.forms import ModelForm
 from track.models import *
@@ -12,6 +13,7 @@ from datetime import datetime
 class UserProfileForm(ModelForm):
     class Meta:
         model = UserProfile
+        exclude = ['user']
 
 def my_view(request):
     hoy = datetime.now()
@@ -37,7 +39,8 @@ def user_profile(request):
     return render_to_response('profile_form.html', 
         {
             'form': profileForm
-        }
+        },
+        context_instance = RequestContext(request)
     )
 
 def json_board(request):
