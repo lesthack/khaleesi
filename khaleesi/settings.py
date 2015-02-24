@@ -44,6 +44,8 @@ INSTALLED_APPS = (
     'track',
 )
 
+TEMPLATE_DIRS = (BASE_DIR+'/khaleesi/templates/',)
+
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

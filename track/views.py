@@ -5,8 +5,13 @@ from django.contrib.admin import site
 from django.conf.urls import patterns
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.core.exceptions import PermissionDenied
+from django.forms import ModelForm
 from track.models import *
 from datetime import datetime
+
+class UserProfileForm(ModelForm):
+    class Meta:
+        model = UserProfile
 
 def my_view(request):
     hoy = datetime.now()
@@ -19,6 +24,20 @@ def my_view(request):
             'quote': c.cita_aleatoria().descripcion,
         },
         context_instance=RequestContext(request)
+    )
+
+def user_profile(request):
+    profileView = UserProfile.objects.get(user=request.user)
+    
+    if request.method == 'POST':
+        profileForm = UserProfileForm(request.POST, instance=profileView)
+    else:
+        profileForm = UserProfileForm(instance=profileView)
+
+    return render_to_response('profile_form.html', 
+        {
+            'form': profileForm
+        }
     )
 
 def json_board(request):
@@ -229,6 +248,7 @@ def get_admin_urls(urls):
         my_urls = patterns('',
             (r'^my_view/$', site.admin_view(my_view)),
             (r'^json/board/$', site.admin_view(json_board)),
+            (r'^auth/profile/$', site.admin_view(user_profile)),
             (r'^gantt/$', site.admin_view(gantt_all)),
             (r'^track/proyecto/(?P<proyecto_id>\d+)/gantt/$', site.admin_view(gantt_por_proyecto)),
             (r'^track/user/(?P<user_id>\d+)/gantt/$', site.admin_view(gantt_por_usuario)),
