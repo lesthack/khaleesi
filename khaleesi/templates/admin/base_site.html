@@ -1,0 +1,23 @@
+{% extends "admin/base.html" %}
+{% load admin_static staticfiles i18n %}
+
+{% block extrajs %}
+    <script>
+        console.log('Hey');
+    </script>
+{% endblock %}
+
+{% block userlinks %}
+    {% url 'django-admindocs-docroot' as docsroot %}
+    {% if docsroot %}
+        <a href="{{ docsroot }}">{% trans 'Documentation' %}</a>
+        <span class="separator">|</span>
+    {% endif %}
+    <span class="separator">|</span>
+    <a href="/admin/auth/profile/">{% trans 'Preferences' %}</a>
+    <span class="separator">|</span>
+    <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a>
+    <span class="separator">|</span>
+    <a href="{% url 'admin:logout' %}">{% trans 'Log out' %}</a>
+    </span>
+{% endblock %}
