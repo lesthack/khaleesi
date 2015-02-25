@@ -21,9 +21,12 @@ except ImportError:
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+HOST_NAME = 'khaleesi.unisem.mx'
+URL_HOST = 'http://' + HOST_NAME
+
 DEBUG = True
 TEMPLATE_DEBUG = True
-ALLOWED_HOSTS = ['localhost', 'khaleesi.unisem.mx']
+ALLOWED_HOSTS = ['localhost', HOST_NAME]
 
 ADMINS = (
     ('Jorge Hernandez', 'j.hernandez@maices.com')
