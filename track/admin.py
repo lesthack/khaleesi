@@ -2,15 +2,20 @@
 from django import forms
 from django.contrib import admin
 from track.models import *
+from track.views import *
 import datetime
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
+from track.models import UserProfile
 
 class proyectoForm(forms.ModelForm):
     class Meta:
         model = proyecto
         exclude = ['created_by', 'deleted','deleted_by','deleted_at']
 
+@admin.register(proyecto)
 class proyectoAdmin(admin.ModelAdmin):
-    list_display = ['proyecto', 'link', 'descripcion', 'activos', 'cancelados', 'created_by', 'created_at', 'deleted', 'deleted_by']
+    list_display = ['proyecto', 'link', 'descripcion', 'activos', 'cancelados', 'gantt_link', 'created_by', 'created_at', 'deleted', 'deleted_by']
     list_display_links = ['proyecto']
     search_fields = ['proyecto', 'link', 'descripcion', 'created_by__username', 'deleted', 'deleted_by__username']
     list_filter = ['created_at', 'updated_at', 'deleted']
@@ -46,11 +51,13 @@ class moduloForm(forms.ModelForm):
         model = modulo
         exclude = ['created_by', 'deleted', 'deleted_by', 'deleted_at']
 
+@admin.register(modulo)
 class moduloAdmin(admin.ModelAdmin):
-    list_display = ['modulo', 'proyecto_link', 'descripcion', 'issues_resueltos', 'issues_abiertos', 'issues_abandonados', 'issues_cancelados', 'created_by', 'created_at', 'deleted', 'deleted_by']
+    list_display = ['proyecto_link', 'modulo', 'descripcion', 'issues_resueltos', 'issues_abiertos', 'issues_abandonados', 'issues_cancelados', 'created_by', 'created_at', 'deleted', 'deleted_by']
     list_display_links = ['modulo']
     search_fields = ['modulo', 'descripcion', 'created_by__username', 'deleted', 'deleted_by__username']
     list_filter = ['proyecto__proyecto', 'created_at','updated_at', 'deleted']
+    ordering = ('proyecto__proyecto', 'modulo')
     form = moduloForm
 
     def get_readonly_fields(self, request, obj=None):
@@ -79,11 +86,91 @@ class moduloAdmin(admin.ModelAdmin):
 
         return False
 
+class tareaForm(forms.ModelForm):    
+    class Meta:
+        model = tarea
+        exclude = ['created_by', 'created_at', 'updated_at', 'status']
+    def clean(self):
+        cleaned_data = super(tareaForm, self).clean()
+
+        if cleaned_data.get("fecha_inicial") >= cleaned_data.get("fecha_final"):
+            msg = u'La fecha final debe ser mayor a la fecha inicial.'
+            self._errors["fecha_final"] = self.error_class([msg])
+
+        return cleaned_data
+
+@admin.register(tarea)
+class tareaAdmin(admin.ModelAdmin):
+    list_display = ['id', 'proyecto_link', 'modulo_link', 'nombre', 'fecha_inicial', 'fecha_final', 'get_horas_estimadas', 'get_horas_reales','status', 'get_pizarron', 'responsable_link', 'created_at', 'created_by']
+    list_display_links = ['id', 'nombre']
+    search_fields = ['nombre', 'descripcion', 'responsable__username']
+    list_filter = ['modulo__proyecto__proyecto', 'modulo__modulo', 'status', 'responsable', 'fecha_inicial', 'fecha_final']
+    actions = None
+    form = tareaForm
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+            if obj.responsable is None:
+                obj.responsable = obj.created_by
+            obj.save() # and trigger signal
+        elif request.user == obj.responsable and not obj.fecha_inicial is None and not obj.fecha_final is None and not obj.horas_estimadas is None and obj.get_last_log().status == 0:
+            obj.save()
+            new_pizarron = pizarron(tarea=obj, created_by=obj.responsable)
+            new_pizarron.status = 1
+            new_pizarron.log = u'Tarea {} aceptada por {}.'.format(obj.id, obj.responsable)
+            new_pizarron.save()
+        else:
+            print '[admin_track_tarea] Alguien trata de guardar una tarea que bien, no es de él, o ya no es posible editar.'
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and obj.status == 0: # Si aun esta abierto
+            self.exclude = ['created_by', 'created_at', 'updated_at', 'status']
+            if obj.get_last_log().status == 0 and obj.responsable == request.user:
+                if obj.fecha_inicial is None or obj.fecha_final is None or obj.horas_estimadas is None:
+                    return self.readonly_fields + ('modulo', 'nombre', 'descripcion', 'responsable', 'status')
+            self.actions = None
+            return self.readonly_fields + ('modulo', 'nombre', 'descripcion', 'responsable', 'fecha_inicial', 'fecha_final', 'horas_estimadas', 'status')
+        elif obj and obj.status == 1:
+            return self.readonly_fields + ('modulo', 'nombre', 'descripcion', 'responsable', 'fecha_inicial', 'fecha_final', 'horas_estimadas', 'status')
+        return self.readonly_fields
+
+    def get_form(self, request, obj=None, **kwargs):
+        if obj:
+            self.change_form_template = 'tarea_view_form.html'
+        return super(tareaAdmin, self).get_form(request, obj, **kwargs)
+
+@admin.register(pizarron)
+class pizarronAdmin(admin.ModelAdmin):
+    list_display = ['id', 'responsable_link', 'proyecto_link', 'modulo_link', 'tarea_link', 'status', 'log', 'created_at']
+    list_display_links = ['id']
+    search_fields = ['log']
+    list_filter = ['tarea__modulo__proyecto__proyecto', 'tarea__modulo__modulo', 'tarea__responsable__username', 'status']
+    exclude = ['created_by', 'log']
+    ordering = ['-created_at']
+    actions = None
+
+    def has_add_permission(self, request):
+        return False
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj:
+            return self.readonly_fields + ('tarea', 'log', 'status', 'created_by', 'created_at', 'updated_at')
+        return self.readonly_fields
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.created_by = request.user
+            #if obj.status > 1:
+            #    obj.log = '{} ha marcado esta tarea como {}'.format(request.user, obj.get_status())
+            obj.save() # and trigger signal
+
 class tipo_issueForm(forms.ModelForm):
     class Meta:
         model = tipo_issue
         exclude = ['created_by']
 
+@admin.register(tipo_issue)
 class tipo_issueAdmin(admin.ModelAdmin):
     list_display = ['tipo', 'created_by', 'created_at']
     list_display_links = ['tipo']
@@ -100,6 +187,7 @@ class issue_notaForm(forms.ModelForm):
         model = issue
         exclude = ['created_by']
 
+@admin.register(issue_nota)
 class issue_notaAdmin(admin.ModelAdmin):
     list_display = ['id', 'issue', 'nota', 'like', 'created_by', 'created_at']
     list_display_links = ['id']
@@ -121,8 +209,9 @@ class issueForm(forms.ModelForm):
         model = issue
         exclude = ['updated_by', 'created_by', 'created_at', 'updated_at', 'status']
 
+@admin.register(issue)
 class issueAdmin(admin.ModelAdmin):
-    list_display = ['id', 'proyecto_link', 'modulo_link', 'tipo_issue', 'status', 'urgencia', 'importancia', 'descripcion', 'asignado_a', 'created_by', 'created_at']
+    list_display = ['id', 'proyecto_link', 'modulo_link', 'tipo_issue', 'status', 'urgencia', 'importancia', 'get_descripcion', 'asignado_a', 'created_by', 'created_at']
     list_display_links = ['id']
     search_fields = ['id', 'modulo__proyecto__proyecto', 'modulo__modulo', 'tipo_issue__tipo', 'status', 'urgencia', 'importancia', 'asignado_a__username', 'created_by__username', 'updated_by__username']
     ordering = ['status', '-urgencia','-importancia','-created_at']
@@ -133,7 +222,7 @@ class issueAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj=None):
         if obj and not request.user.is_superuser:
             self.actions = None
-            self.exclude = []
+            self.exclude = ()
             readonly_fields = ()
 
             if obj.asignado_a  == request.user:
@@ -145,7 +234,6 @@ class issueAdmin(admin.ModelAdmin):
 
             return self.readonly_fields + readonly_fields
         elif obj and request.user.is_superuser:
-            self.exclude = []
             if not obj.is_closed():
                 return self.readonly_fields + ('id', 'created_at', 'updated_at')
             else:
@@ -156,8 +244,10 @@ class issueAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
         if obj:
             self.change_form_template = 'issue_view_form.html'
+        else:
+            self.change_form_template = 'issue_new_form.html'
         return super(issueAdmin, self).get_form(request, obj, **kwargs)
-
+    
     def suit_row_attributes(self, obj, request):
         COLORS = (
             ('info', 'info', 'warning'),
@@ -171,7 +261,6 @@ class issueAdmin(admin.ModelAdmin):
             row_class = 'success'
 
         return {'class': row_class, 'data': obj.id}
-
 
     def save_model(self, request, obj, form, change):
         if change:
@@ -189,8 +278,51 @@ class issueAdmin(admin.ModelAdmin):
         
         obj.save()
 
-admin.site.register(proyecto, proyectoAdmin)
-admin.site.register(modulo, moduloAdmin)
-admin.site.register(tipo_issue, tipo_issueAdmin)
-admin.site.register(issue, issueAdmin)
-admin.site.register(issue_nota, issue_notaAdmin)
+class citaForm(forms.ModelForm):
+    class Meta:
+        model = cita
+        exclude = ['created_by','deleted','deleted_by','deleted_at']
+
+@admin.register(cita)
+class citaAdmin(admin.ModelAdmin):
+    list_display = ['id', 'descripcion', 'deleted', 'created_by', 'created_at', 'updated_at']
+    list_display_links = ['id']
+    list_filter = ['created_by', 'created_at']
+    search_fields = ['descripcion', 'created_by__username']
+    form = citaForm
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+
+    def save_model(self, request, obj, form, change):
+        if change:
+            if obj.deleted == False:
+                obj.deleted_by = None
+                obj.deleted_at = None
+        else:
+            obj.created_by = request.user
+        obj.save()
+    
+    def delete_model(self, request, obj):
+        obj.deleted = True
+        obj.deleted_by = request.user
+        obj.deleted_at = datetime.datetime.now()
+        obj.save()
+
+        return False
+
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    can_delete = False
+    verbose_name_plural = 'Información adicional'
+    verbose_name = 'Usuario'
+
+class UserAdmin(UserAdmin):
+    inlines = (UserProfileInline, )
+
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)
+
+# Agregamos vistas personalizadas
+admin.site.get_urls = get_admin_urls(admin.site.get_urls())
+

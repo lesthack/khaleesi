@@ -1,0 +1,53 @@
+{% extends "admin/change_form.html" %}
+{% load admin_modify %}
+{% block submit_buttons_bottom %}
+    {% if adminform.form.instance.id and adminform.form.instance.responsable == user %}
+        {% with adminform.form.instance.get_last_log.status as status_log  %}
+        <div class="submit-row clearfix">
+            <p>Marcar como:</p>
+            {% if status_log == 0 %}
+                <button type="submit" class="btn btn-info">Aceptar y marcar como Pendiente</button>
+            {% elif status_log == 1 or status_log == 6 %}
+                <a href="./board/2/" class="btn btn-primary" style="width: 130px;">En Proceso</a>
+            {% elif status_log == 2 %}
+                <a href="./board/3/" class="btn btn-warning" style="width: 130px;">Pausado</a>
+                <a href="./board/4/" class="btn btn-success" style="width: 130px;">Terminado</a>
+                <a href="./board/5/" class="btn btn-danger" style="width: 130px;">Bloqueado</a>
+            {% elif status_log == 3 or status_log == 5 %}
+                <a href="./board/2/" class="btn btn-primary" style="width: 130px;">En Proceso</a>
+                <a href="./board/1/" class="btn btn-inverse" style="width: 130px;">Pendiente</a>
+            {% elif status_log == 4 %}
+                <a href="#" class="btn btn-primary" style="width: 130px;">Reasignar</a>
+            {% endif %}
+        </div>
+        {% endwith %}
+    {% elif not adminform.form.instance.id %}
+        {% submit_row %}
+    {% endif %}
+{% endblock %}
+{% block after_field_sets %}
+    {% if adminform.form.instance.id %}
+        <fieldset class="module aligned first">
+            <div class="control-group form-row field-estado ">
+                <div>
+                    <div class="control-label">
+                        <label>Estado:</label>
+                    </div>
+                    <div class="controls">
+                        <h2 class="readonly"><b>{{ adminform.form.instance.get_last_status }}</b></h2>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group form-row field-estado ">
+                <div>
+                    <div class="control-label">
+                        <label>Horas Reales:</label>
+                    </div>
+                    <div class="controls">
+                        <h2 class="readonly"><b>{{ adminform.form.instance.get_horas_reales }}</b></h2>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    {% endif %}
+{% endblock %}

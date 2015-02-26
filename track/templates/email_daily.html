@@ -1,0 +1,134 @@
+{% extends "base_email.html" %}
+{% block titulo%}Mis Actividades <br/><small>{{ hoy|date:"d" }} de {{ hoy|date:"F" }} del {{ hoy|date:"Y" }}</small>{% endblock %}
+{% block descripcion %}
+{% endblock %}
+{% block contenido %}
+    <p>
+        {% if hoy.hour >=  0 and hoy.hour < 12 %}
+        Buenos días
+        {% elif hoy.hour >= 12 and hoy.hour < 19 %}
+        Buenas tardes
+        {% else %}
+        Buenas noches
+        {% endif %}
+        {{ user.first_name }}, 
+        {% if hoy.weekday == 0 %} 
+        hoy es un buen día para comenzar a trabajar.
+        {% elif hoy.weekday == 1 %}
+        un café no estaría mal para empezar.
+        {% elif hoy.weekday == 2 %}
+        es ombligo de semana.
+        {% elif hoy.weekday == 3 %}
+        ya cási logramos salir de esta.
+        {% elif hoy.weekday == 4 %}
+        vamos a cerrar la semana con éxito.
+        {% elif hoy.weekday == 5 %}
+        trabajar en sábado es de campeones.
+        {% elif hoy.weekday == 6 %}
+        hoy deberías tomarte un descanzo para iniciar bien la semana.
+        {% endif %}
+    </p>
+    <div class="resume" style="min-height: 50px; margin-top: 10px;">
+    {% if user.get_tareas|length == 0 %}
+        <p>Al parecer, aun no te has asignado tareas. 
+        {% if user.get_issues_abiertos|length > 0 %}
+        Sin embargo, tienes issues que resolver según veo.
+        {% else %}
+        <br>Hoy es un buen momento para comenzar a planear. Puedes comenzar a hacerlo dando click <a href="{{ URL_HOST }}/admin/track/tarea/">aqui</a>.
+        {% endif %}
+        </p>
+    {% elif user.get_tareas_abiertas|length == 0 and user.get_tareas_abiertas_bloqueadas|length == 0 %}
+        <p>Felicidades, parece ser que has terminado tus tareas asignadas. <br/>
+        {% if user.get_issues_abiertos|length > 0 %}
+        Sin embargo, aun tienes issues abiertos.
+        {% else %}
+        Si hay nuevas tareas que deseas agregar, por favor, da click <a href="{{ URL_HOST }}/admin/track/tarea/">aqui</a>.
+        {% endif %}
+        </p>
+    {% else %}
+        <p>Tienes un total de {{ user.get_tareas_abiertas_cantidad|length }} tareas abiertas
+        {% if user.get_tareas_cerradas|length > 0 %} y has finalizado {{ user.get_tareas_cerradas|length }}{% else %} y aun no has finalizado ninguna.{% endif %}</p>
+        <p>Este es el resumen:</p>
+        <table width="100%" style="margin: 10px;">
+            <tr>
+                <th>Id</th>
+                <th>Proyecto</th>
+                <th>Modulo</th>
+                <th>Tarea</th>
+                <th>Fecha <br>Inicial</th>
+                <th>Fecha <br>Final</th>
+                <th>Horas <br>Estimadas</th>
+                <th>Horas <br>Reales</th>
+                <th>Último <br>Estatus</th>
+            </tr>
+            {% for tarea in user.get_tareas_abiertas %}
+            <tr>
+                <td><a href="{{ URL_HOST }}/admin/track/tarea/{{ tarea.id }}/">{{ tarea.id }}</a></td>
+                <td>{{ tarea.modulo.proyecto }}</td>
+                <td>{{ tarea.modulo.modulo }}</td>
+                <td><a href="{{ URL_HOST }}/admin/track/tarea/{{ tarea.id }}/">{{ tarea.nombre }}</a></td>
+                <td>{{ tarea.fecha_inicial|date:"d/m/Y" }}</td>
+                <td>{{ tarea.fecha_final|date:"d/m/Y" }}</td>
+                <td>{{ tarea.horas_estimadas }}</td>
+                <td>{{ tarea.get_horas_reales }}</td>
+                <td>{{ tarea.get_last_status }}</td>
+            </tr>
+            {% endfor %}
+            {% for tarea in user.get_tareas_abiertas_bloqueadas %}
+            <tr>
+                <td><a href="{{ URL_HOST }}/admin/track/tarea/{{ tarea.id }}/">{{ tarea.id }}</a></td>
+                <td>{{ tarea.modulo.proyecto }}</td>
+                <td>{{ tarea.modulo.modulo }}</td>
+                <td><a href="{{ URL_HOST }}/admin/track/tarea/{{ tarea.id }}/">{{ tarea.nombre }}</a></td>
+                <td>{{ tarea.fecha_inicial|date:"d/m/Y" }}</td>
+                <td>{{ tarea.fecha_final|date:"d/m/Y" }}</td>
+                <td>{{ tarea.horas_estimadas }}</td>
+                <td>{{ tarea.get_horas_reales }}</td>
+                <td>{{ tarea.get_last_status }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% if user.get_issues_abiertos|length > 0 %}
+        <br>Y tienes un total de {{ user.get_issues_abiertos|length }} issues aun pendientes por resolver.
+        {% endif %}
+    {% endif %}
+    {% if user.get_issues_abiertos|length > 0 %}
+        <br>Los 10 issues mas importantes por resolver son los siguientes:
+        <table width="100%" style="margin: 10px;">
+            <tr>
+                <th>Id</th>
+                <th>Proyecto</th>
+                <th>Modulo</th>
+                <th>Tipo</th>
+                <th>Urgencia</th>
+                <th>Importancia</th>
+                <th>Fecha</th>
+                <th>Asignado por</th>
+                <th>Descripcion</th>
+            </tr>
+            {% for issue in user.get_10_issues_abiertos %}
+            <tr>
+                <td><a href="http://khaleesi.unisem.mx/admin/track/issue/28/">{{ issue.id }}</a></td>
+                <td>{{ issue.modulo.proyecto }}</td>
+                <td>{{ issue.modulo.modulo }}</td>
+                <td>{{ issue.tipo_issue }}</td>
+                <td>{{ issue.get_urgencia }}</td>
+                <td>{{ issue.get_importancia }}</td>
+                <td>{{ issue.created_at|date:"d/m/Y" }}</td>
+                <td>{{ issue.created_by }}</td>
+                <td><a href="http://khaleesi.unisem.mx/admin/track/issue/28/">{{ issue.get_descripcion }}</a></td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="9"><a href="http://khaleesi.unisem.mx/admin/track/issue/?q=&asignado_a__id__exact={{ user.id }}">Ver todos...</a><td>
+            </tr>
+        </table>
+    {% endif %}
+    <p>Que tengas un excelente día</p>
+    </div>
+    <div>
+        <blockquote>
+            <i>"{{ quote }}" » geekquotes.</i>
+        </blockquote>
+    </div>
+{% endblock %}

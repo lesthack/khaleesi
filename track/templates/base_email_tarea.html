@@ -1,0 +1,34 @@
+{% extends "base_email.html" %}
+{% block titulo%}Tarea {{ tarea.id }}{% endblock %}
+{% block descripcion %}
+    {% if es_nuevo and tarea.responsable == tarea.created_by %}
+        Al parecer te has asignado una nueva tarea por resolver.
+    {% elif es_nuevo and tarea.responsable != tarea.created_by %}
+        El usuario <b>{{ tarea.created_by.username }}</b> te ha asignado una nueva tarea, para aceptarla da click <a href="{{ URL_HOSTS }}/admin/track/tarea/{{ tarea.id }}/">aquí</a>
+    {% elif not es_nuevo and tarea.responsable == tarea.created_by %}
+        Has marcado como {{ tarea.get_status }} esta tarea.
+    {% elif not es_nuevo and tarea.responsable != tarea.created_by %}
+        El usuario <b>{{ tarea.responsable.username }}</b> ha <b>{{ tarea.get_status }}</b> la tarea que le asignaste.
+    {% endif %}
+{% endblock %}
+{% block contenido %}
+    <h4>Detalles:</h4>
+    <div class="resume">
+        <span class="field">ID</span> : <b>{{ tarea.id }}</b><br/>
+        <span class="field">Proyecto</span> : <b>{{ tarea.modulo.proyecto }}</b><br/>
+        <span class="field">Modulo</span> : <b>{{ tarea.modulo.modulo }}</b><br/>
+        <span class="field">Fecha</span> : <b>{{ tarea.created_at }}</b><br/>
+    </div>
+    <br>
+    <h4>Descripción</h4>
+    <div class="descripcion">
+        <p>{{ tarea.descripcion|safe|linebreaks }}</p>
+    </div>
+    <br>
+    {% if not es_nuevo %}
+        <p style="padding: 10px; text-align: center;">
+        <a href="{{ URL_HOSTS }}/admin/track/tarea/{{ tarea.id }}/" class="btn-primary">Ver Detalles</a>
+        </p>
+    {% endif %}
+    <hr/>
+{% endblock %}

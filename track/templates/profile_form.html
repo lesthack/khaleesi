@@ -1,0 +1,50 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_static admin_modify admin_urls %}
+
+{% block bodyclass %}Profile{% endblock %}
+
+{% block content %}
+  <div id="content-main">
+    <form action="" method="post" id="profile_form" class="form-horizontal">
+      {% csrf_token %}  
+      <div>
+        {% if form.errors %}
+          <div class="alert alert-error">
+              {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %} Please correct the errors below.
+              {% endblocktrans %}
+          </div>
+        {% endif %}
+
+        <div class="alert alert-info">{% blocktrans %}Puede obtener su Toke de Pushbullet <a href="https://www.pushbullet.com/account">aqui</a>.{% endblocktrans %}</div>
+        
+        <fieldset class="module aligned">
+          <div class="control-group{{ form.token.errors|yesno:' error,' }}">
+            <div class="control-label">
+              <label for="id_token">{% trans 'Pushbullet Token' %}:</label>
+            </div>
+            <div class="controls">
+              {{ form.token }}
+              <div class="help-inline">{{ form.token.errors }}</div>
+            </div>
+          </div>
+
+          <div class="control-group{{ form.is_mail_active.errors|yesno:' error,' }}">
+            <div class="control-label">
+              <label for="id_is_email_active" class="required">{% trans 'Recibir emails' %}:</label>
+            </div>
+            <div class="controls">
+              {{ form.is_email_active }}
+              <div class="help-inline">{{ form.is_email_active.errors }}</div>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="submit-row submit-row-bottom">
+          <input type="submit" value="{% trans 'Save' %}" class="default btn btn-info"/>
+        </div>
+
+        <script type="text/javascript">document.getElementById("id_token").focus();</script>
+      </div>
+    </form>
+  </div>
+{% endblock %}
