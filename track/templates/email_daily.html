@@ -34,7 +34,7 @@
         {% if user.get_issues_abiertos|length > 0 %}
         Sin embargo, tienes issues que resolver según veo.
         {% else %}
-        <br>Hoy es un buen momento para comenzar a planear. Puedes comenzar a hacerlo dando click <a href="khaleesi.unisem.mx/admin/track/tarea/">aqui</a>.
+        <br>Hoy es un buen momento para comenzar a planear. Puedes comenzar a hacerlo dando click <a href="{{ URL_HOST }}/admin/track/tarea/">aqui</a>.
         {% endif %}
         </p>
     {% elif user.get_tareas_abiertas|length == 0 and user.get_tareas_abiertas_bloqueadas|length == 0 %}
@@ -42,7 +42,7 @@
         {% if user.get_issues_abiertos|length > 0 %}
         Sin embargo, aun tienes issues abiertos.
         {% else %}
-        Si hay nuevas tareas que deseas agregar, por favor, da click <a href="khaleesi.unisem.mx/admin/track/tarea/">aqui</a>.
+        Si hay nuevas tareas que deseas agregar, por favor, da click <a href="{{ URL_HOST }}/admin/track/tarea/">aqui</a>.
         {% endif %}
         </p>
     {% else %}
@@ -63,10 +63,10 @@
             </tr>
             {% for tarea in user.get_tareas_abiertas %}
             <tr>
-                <td><a href="http://khaleesi.unisem.mx/admin/track/tarea/{{ tarea.id }}/">{{ tarea.id }}</a></td>
+                <td><a href="{{ URL_HOST }}/admin/track/tarea/{{ tarea.id }}/">{{ tarea.id }}</a></td>
                 <td>{{ tarea.modulo.proyecto }}</td>
                 <td>{{ tarea.modulo.modulo }}</td>
-                <td><a href="http://khaleesi.unisem.mx/admin/track/tarea/{{ tarea.id }}/">{{ tarea.nombre }}</a></td>
+                <td><a href="{{ URL_HOST }}/admin/track/tarea/{{ tarea.id }}/">{{ tarea.nombre }}</a></td>
                 <td>{{ tarea.fecha_inicial|date:"d/m/Y" }}</td>
                 <td>{{ tarea.fecha_final|date:"d/m/Y" }}</td>
                 <td>{{ tarea.horas_estimadas }}</td>
@@ -76,10 +76,10 @@
             {% endfor %}
             {% for tarea in user.get_tareas_abiertas_bloqueadas %}
             <tr>
-                <td><a href="http://khaleesi.unisem.mx/admin/track/tarea/{{ tarea.id }}/">{{ tarea.id }}</a></td>
+                <td><a href="{{ URL_HOST }}/admin/track/tarea/{{ tarea.id }}/">{{ tarea.id }}</a></td>
                 <td>{{ tarea.modulo.proyecto }}</td>
                 <td>{{ tarea.modulo.modulo }}</td>
-                <td><a href="http://khaleesi.unisem.mx/admin/track/tarea/{{ tarea.id }}/">{{ tarea.nombre }}</a></td>
+                <td><a href="{{ URL_HOST }}/admin/track/tarea/{{ tarea.id }}/">{{ tarea.nombre }}</a></td>
                 <td>{{ tarea.fecha_inicial|date:"d/m/Y" }}</td>
                 <td>{{ tarea.fecha_final|date:"d/m/Y" }}</td>
                 <td>{{ tarea.horas_estimadas }}</td>

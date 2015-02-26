@@ -60,6 +60,7 @@ MIDDLEWARE_CLASSES = (
 
 TEMPLATE_CONTEXT_PROCESSORS = TCP + (
     'django.core.context_processors.request',
+    'khaleesi.context_processors.context_url_host',
 )
 
 ROOT_URLCONF = 'khaleesi.urls'
