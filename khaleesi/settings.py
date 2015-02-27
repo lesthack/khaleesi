@@ -1,35 +1,28 @@
 # -*- coding: utf-8 -*-
 """
 Django settings for khaleesi project.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/1.6/topics/settings/
-
-For the full list of settings and their values, see
-https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 import os, sys, traceback
 
-try:
-    from sensible import *
-except ImportError:
-    traceback.print_exc(file=sys.stdout)
-    print 'Help: \n\tCreate a file khaleesi\sensible.py \n\tSample https://gist.github.com/lesthack/0485bc3c94f340d73570'
-    sys.exit(0)
+SECRET_KEY      = '(5hoxbl0s!p2s4h*5h=c-bggzz1srxbaj5o@u7zqjt@wki-0m+'
+BASE_DIR        = os.path.dirname(os.path.dirname(__file__))
+DEBUG           = True
+TEMPLATE_DEBUG  = True
+HOST_NAME       = 'localhost'
+URL_HOST        = 'http://' + HOST_NAME
+ALLOWED_HOSTS   = ['localhost', HOST_NAME]
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-
-HOST_NAME = 'khaleesi.unisem.mx'
-URL_HOST = 'http://' + HOST_NAME
-
-DEBUG = True
-TEMPLATE_DEBUG = True
-ALLOWED_HOSTS = ['localhost', HOST_NAME]
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
 
 ADMINS = (
-    ('Jorge Hernandez', 'j.hernandez@maices.com')
+    ('Admin', 'admin@localhost.com')
 )
 
 INSTALLED_APPS = (
