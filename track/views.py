@@ -1,32 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
-from django.contrib.admin import site
-from django.conf.urls import patterns
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import PermissionDenied
-from django.forms import ModelForm
 from track.models import *
+from khaleesi.forms import UserProfileForm
 from datetime import datetime
-
-class UserProfileForm(ModelForm):
-    class Meta:
-        model = UserProfile
-        exclude = ['user']
-
-def my_view(request):
-    hoy = datetime.now()
-    c = cita()
-    return render_to_response(
-        'email_daily.html',        
-        {
-            'user': User.objects.get(id=2),
-            'hoy': hoy,
-            'quote': c.cita_aleatoria().descripcion,
-        },
-        context_instance=RequestContext(request)
-    )
 
 def user_profile(request):
     profileView = UserProfile.objects.get(user=request.user)
@@ -245,18 +225,3 @@ def board(request, tarea_id, status_id):
         return HttpResponseRedirect('/admin/track/tarea/')
     return HttpResponseRedirect('/admin/track/tarea/{0}/'.format(tarea_id))
 
-# Urls
-def get_admin_urls(urls):
-    def get_urls():
-        my_urls = patterns('',
-            (r'^my_view/$', site.admin_view(my_view)),
-            (r'^json/board/$', site.admin_view(json_board)),
-            (r'^auth/profile/$', site.admin_view(user_profile)),
-            (r'^gantt/$', site.admin_view(gantt_all)),
-            (r'^track/proyecto/(?P<proyecto_id>\d+)/gantt/$', site.admin_view(gantt_por_proyecto)),
-            (r'^track/user/(?P<user_id>\d+)/gantt/$', site.admin_view(gantt_por_usuario)),
-            (r'^track/user/(?P<user_id>\d+)/proyecto/(?P<proyecto_id>\d+)/gantt/$', site.admin_view(gantt_por_usuario_proyecto)),
-            (r'^track/tarea/(?P<tarea_id>\d+)/board/(?P<status_id>\d+)/$', site.admin_view(board)),
-        )
-        return my_urls + urls
-    return get_urls

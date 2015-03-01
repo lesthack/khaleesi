@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from django import forms
 from django.contrib import admin
-from track.models import *
-from track.views import *
-import datetime
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from track.models import UserProfile
+from track.models import *
+import datetime
 
 class proyectoForm(forms.ModelForm):
     class Meta:
@@ -322,7 +320,3 @@ class UserAdmin(UserAdmin):
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
-
-# Agregamos vistas personalizadas
-admin.site.get_urls = get_admin_urls(admin.site.get_urls())
-
