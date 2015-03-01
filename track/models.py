@@ -382,7 +382,7 @@ class cita(models.Model):
     def __unicode__(self):
         return self.descripcion
 
-# User
+# Extensiones al modelo User [Tal vez deberian separarse en otro archivo]
 def user_get_tareas(self, status=[0,1]):
     """
         Tareas de un usuario.
