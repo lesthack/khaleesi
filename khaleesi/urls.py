@@ -4,15 +4,20 @@ from django.core.urlresolvers import reverse
 from django.views.generic.base import RedirectView
 from django.contrib.admin import site
 from django.contrib import admin
+from tastypie.api import Api
 from track.views import *
 from api import *
 
 admin.autodiscover()
-issue_resource = IssueResource()
+
+v1_api = Api(api_name='v1')
+v1_api.register(IssueResource())
+v1_api.register(UserResource())
+
 
 urlpatterns = patterns('',
     url(r'^$', RedirectView.as_view(url='/admin')),
-    url(r'^api/', include(issue_resource.urls)),
+    url(r'^api/', include(v1_api.urls)),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^admin/gantt/$', site.admin_view(gantt_all)),
     url(r'^admin/json/board/$', site.admin_view(json_board)),

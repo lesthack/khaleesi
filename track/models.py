@@ -6,6 +6,7 @@ from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
+from tastypie.models import create_api_key
 from khaleesi.sensible import *
 from datetime import datetime
 import ast
@@ -440,3 +441,5 @@ User.add_to_class('get_10_issues_abiertos', user_get_10_issues_abiertos)
 User.add_to_class('get_tareas_activas', user_get_tareas_activas)
 User.add_to_class('get_tareas_recientes', user_get_tareas_recientes)
 
+# Signals
+models.signals.post_save.connect(create_api_key, sender=User)
