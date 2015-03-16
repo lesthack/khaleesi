@@ -12,8 +12,9 @@ admin.autodiscover()
 
 v1_api = Api(api_name='v1')
 v1_api.register(IssueResource())
+v1_api.register(TareaResource())
+v1_api.register(PizarronResource())
 v1_api.register(UserResource())
-
 
 urlpatterns = patterns('',
     url(r'^$', RedirectView.as_view(url='/admin')),
