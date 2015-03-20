@@ -39,6 +39,14 @@
           </div>
         </fieldset>
 
+        {% if saved = True %}
+        <br/>
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            {% trans 'Done' %}. 
+        </div>
+        {% endif %}
+
         <div class="submit-row submit-row-bottom">
           <input type="submit" value="{% trans 'Save' %}" class="default btn btn-info"/>
         </div>

@@ -10,15 +10,20 @@ from datetime import datetime
 
 def user_profile(request):
     profileView = UserProfile.objects.get(user=request.user)
-    
+    saved = None
+
     if request.method == 'POST':
         profileForm = UserProfileForm(request.POST, instance=profileView)
+        if profileForm.is_valid():
+            profileForm.save()
+            saved = True
     else:
         profileForm = UserProfileForm(instance=profileView)
 
     return render_to_response('profile_form.html', 
         {
-            'form': profileForm
+            'form': profileForm,
+            'saved': saved,
         },
         context_instance = RequestContext(request)
     )
