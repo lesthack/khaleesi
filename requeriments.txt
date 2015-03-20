@@ -1,8 +1,13 @@
+defusedxml==0.4.1
 Django==1.7.1
-argparse==1.2.1
 django-crontab==0.5.1
 django-extensions==1.4.6
 django-suit==0.2.11
 django-suit-redactor==0.0.2
+django-tastypie==0.12.1
+lxml==3.4.2
+psycopg2==2.5.4
+python-dateutil==2.4.0
+python-mimeparse==0.1.4
+PyYAML==3.11
 six==1.8.0
-wsgiref==0.1.2
