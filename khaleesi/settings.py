@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django_extensions',
     'django_crontab',
     'suit_redactor',
+    'tastypie',
     'changelog',
     'track',
 )
