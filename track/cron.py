@@ -16,7 +16,6 @@ def mail_daily():
 
     for user in User.objects.exclude(id__in=(l.user_id for l in list_users)):
         try:
-            print URL_HOST
             c = Context({
                 'hoy': hoy,
                 'user': user,
