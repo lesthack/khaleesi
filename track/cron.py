@@ -2,6 +2,7 @@
 from django.template.loader import get_template
 from django.template import Context
 from datetime import datetime
+from khaleesi.settings import URL_HOST
 from track.models import *
 
 def mail_daily():
@@ -15,10 +16,12 @@ def mail_daily():
 
     for user in User.objects.exclude(id__in=(l.user_id for l in list_users)):
         try:
+            print URL_HOST
             c = Context({
                 'hoy': hoy,
                 'user': user,
                 'quote': cita.objects.filter(deleted=False).order_by('?')[0],
+                'URL_HOST': URL_HOST
             })
             html_template = get_template('email_daily.html')
             html_content = html_template.render(c)

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from khaleesi.settings import URL_HOST
 from track.models import *
 
 @receiver(post_save, sender=issue)
@@ -16,7 +17,8 @@ def send_update(sender, instance, **kwargs):
     if to:
         c = Context({
             'issue': instance,
-            'es_nuevo': kwargs['created']
+            'es_nuevo': kwargs['created'],
+            'URL_HOST': URL_HOST
         })
         template_html = get_template('base_email_issue.html')
         html_content = template_html.render(c)
@@ -52,7 +54,8 @@ def signal_post_save_tarea(sender, instance, **kwargs):
     if to:
         c = Context({
             'tarea': instance,
-            'es_nuevo': kwargs['created']
+            'es_nuevo': kwargs['created'],
+            'URL_HOST': URL_HOST
         })
         template_html = get_template('base_email_tarea.html')
         html_content = template_html.render(c)
