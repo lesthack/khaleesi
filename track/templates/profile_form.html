@@ -37,6 +37,13 @@
               <div class="help-inline">{{ form.is_email_active.errors }}</div>
             </div>
           </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <label for="id_is_email_active" class="required">{% trans 'Tastypie API Key' %}:</label>
+            </div>
+            <div class="controls">{{ user.get_apikey }}</div>
+          </div>
         </fieldset>
 
         {% if saved = True %}

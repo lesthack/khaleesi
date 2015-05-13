@@ -6,7 +6,7 @@ from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
-from tastypie.models import create_api_key
+from tastypie.models import *
 from khaleesi.sensible import *
 from datetime import datetime
 import ast
@@ -430,6 +430,9 @@ def user_get_tareas_recientes(self, n=3):
             ORDER BY (SELECT updated_at FROM track_pizarron WHERE tarea_id=track_tarea.id ORDER BY created_at DESC LIMIT 1 OFFSET 0) DESC \
             LIMIT {n} OFFSET 0'.format(user_id=self.id, n=n))
 
+def user_get_apikey(self):
+    return '{}'.format(ApiKey.objects.get(user=self).key)
+
 User.add_to_class('get_tareas', user_get_tareas)
 User.add_to_class('get_tareas_abiertas', user_get_tareas_abiertas)
 User.add_to_class('get_tareas_abiertas_bloqueadas', user_get_tareas_abiertas_bloqueadas)
@@ -440,6 +443,7 @@ User.add_to_class('get_issues_abiertos', user_get_issues_abiertos)
 User.add_to_class('get_10_issues_abiertos', user_get_10_issues_abiertos)
 User.add_to_class('get_tareas_activas', user_get_tareas_activas)
 User.add_to_class('get_tareas_recientes', user_get_tareas_recientes)
+User.add_to_class('get_apikey', user_get_apikey)
 
 # Signals
 models.signals.post_save.connect(create_api_key, sender=User)
