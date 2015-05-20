@@ -73,7 +73,7 @@ def pushbullet_listening():
             'type': 'note'
          },
         'end_time': {
-            'text': 'Tu día parece haber terminado. Buen trabajo. Recurda que puedes detener todas tus tareas en nuestro enlace.',
+            'text': 'Tu día parece haber terminado. Buen trabajo. Recuerda que puedes detener todas tus tareas en nuestro enlace.',
             'filter': {'end_time': now_time},
             'type': 'link',
             'url': 'http://khaleesi.unisem.mx/admin/track/tarea/'
