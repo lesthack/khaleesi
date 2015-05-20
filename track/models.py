@@ -16,6 +16,16 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     is_email_active = models.BooleanField(default=True)
     token = models.CharField(max_length=50, blank=True, null=True)
+    start_time = models.TimeField(null=True, blank=True)
+    end_time = models.TimeField(null=True, blank=True)
+    lunch_time = models.TimeField(null=True, blank=True)
+    sun = models.BooleanField(default=False)
+    mon = models.BooleanField(default=True)
+    tue = models.BooleanField(default=True)
+    wed = models.BooleanField(default=True)
+    thu = models.BooleanField(default=True)
+    fri = models.BooleanField(default=True)
+    sat = models.BooleanField(default=False)
     
 class proyecto(models.Model):
     proyecto = models.CharField(max_length=100)

@@ -34,7 +34,6 @@ def send_update(sender, instance, **kwargs):
 
 @receiver(post_save, sender=tarea)
 def signal_post_save_tarea(sender, instance, **kwargs):
-
     subject = u'Khaleesi: {0} {1} {2}'.format("Tarea", instance.id, instance.get_status())
     to = None
 
