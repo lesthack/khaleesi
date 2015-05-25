@@ -44,8 +44,19 @@ def mail_sending():
     for item in emails_to_send:
         item.send()
 
-def pushbullet_listening():
+def get_url_image():
     meme_api_url = 'http://version1.api.memegenerator.net/Generators_Search?q=work&pageIndex=0&pageSize=24'
+    imageUrl=''
+    try:
+        data = json.load(urllib2.urlopen(meme_api_url))
+        imageUrl = data['result'][random.randint(0,23)]['imageUrl']
+        print imageUrl
+    except Exception as e:
+        print 'Error: ', e
+    return imageUrl
+
+
+def pushbullet_listening():
     week = ['mon','tue','wed','thu','fri','sat','sun']
     day_of_week = week[datetime.today().weekday()]
     hour_of_day = datetime.now().hour
@@ -53,24 +64,17 @@ def pushbullet_listening():
 
     title = 'Khaleesi notifications'
     now_time = '{hour}:{minute}:00'.format(hour=hour_of_day, minute=minute_of_day)
-    imageUrl = ''
-    try:
-        data = json.load(urllib2.urlopen(meme_api_url))
-        imageUrl = data['result'][random.randint(0,23)]['imageUrl']
-        print imageUrl
-    except Exception as e:
-        print 'Error: ', e
 
     list_notifications = {
         'start_time': {
             'text': 'Buen día. Es hora de comenzar a trabajar. No olvides activar tus tareas.',
             'filter': {'start_time': now_time},
-            'type': 'image'
+            'type': 'note'
          },
         'lunch_time': {
             'text': 'Hora de comer ! Recuerda pausar tus tareas activas.',
             'filter': {'lunch_time': now_time},
-            'type': 'note'
+            'type': 'image'
          },
         'end_time': {
             'text': 'Tu día parece haber terminado. Buen trabajo. Recuerda que puedes detener todas tus tareas en nuestro enlace.',
@@ -91,7 +95,7 @@ def pushbullet_listening():
                     elif list_notifications[notification]['type'] == 'link':
                         push = pb.push_link(title, url=list_notifications[notification]['url'], body=list_notifications[notification]['text'])
                     elif list_notifications[notification]['type'] == 'image':
-                        push = pb.push_file(file_url=imageUrl, file_name=title, file_type='image/jpeg', body=list_notifications[notification]['text'])
+                        push = pb.push_file(file_url=get_url_image(), file_name=title, file_type='image/jpeg', body=list_notifications[notification]['text'])
                     print push
         except Exception as e:
             print 'Error: ', e
