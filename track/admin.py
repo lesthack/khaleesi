@@ -99,12 +99,17 @@ class tareaForm(forms.ModelForm):
 
 @admin.register(tarea)
 class tareaAdmin(admin.ModelAdmin):
-    list_display = ['id', 'proyecto_link', 'modulo_link', 'nombre', 'fecha_inicial', 'fecha_final', 'get_horas_estimadas', 'get_horas_reales','status', 'get_pizarron', 'responsable_link', 'created_at', 'created_by']
+    list_display = ['id', 'proyecto_link', 'modulo_link', 'nombre', 'fecha_inicial', 'fecha_final', 'get_horas_estimadas', 'admin_horas_reales','status', 'get_pizarron', 'responsable_link', 'created_at', 'created_by']
     list_display_links = ['id', 'nombre']
     search_fields = ['nombre', 'descripcion', 'responsable__username']
     list_filter = ['modulo__proyecto__proyecto', 'modulo__modulo', 'status', 'responsable', 'fecha_inicial', 'fecha_final']
     actions = None
     form = tareaForm
+
+    def admin_horas_reales(self, obj):
+        return '%.2f' % round(obj.get_horas_reales(), 2)
+    admin_horas_reales.allow_tags = True
+    admin_horas_reales.short_description = 'Hrs Reales'
 
     def save_model(self, request, obj, form, change):
         if not change:
