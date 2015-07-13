@@ -121,7 +121,7 @@ class tarea(models.Model):
                 datefin = view_pizarron.created_at
                 if dateini and datefin:
                     horas_lambda = datefin - dateini
-                    horas += horas_lambda.seconds
+                    horas += horas_lambda.total_seconds()
                     dateini = None
             last_status = view_pizarron.status
 
