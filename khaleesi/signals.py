@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from khaleesi.settings import URL_HOST
+from tastypie.models import create_api_key
+from django.contrib.auth.models import User
 from track.models import *
 
 @receiver(post_save, sender=issue)
@@ -31,7 +34,6 @@ def send_update(sender, instance, **kwargs):
 
 @receiver(post_save, sender=tarea)
 def signal_post_save_tarea(sender, instance, **kwargs):
-
     subject = u'Khaleesi: {0} {1} {2}'.format("Tarea", instance.id, instance.get_status())
     to = None
 
@@ -66,3 +68,4 @@ def signal_post_save_tarea(sender, instance, **kwargs):
         new_mail.send_to = to
         new_mail.save()
         
+models.signals.post_save.connect(create_api_key, sender=User)

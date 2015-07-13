@@ -138,6 +138,16 @@ class tareaAdmin(admin.ModelAdmin):
             self.change_form_template = 'tarea_view_form.html'
         return super(tareaAdmin, self).get_form(request, obj, **kwargs)
 
+    def changelist_view(self, request, extra_context=None):
+        q = request.GET.copy()
+        if not request.GET.has_key('status__exact'):
+            q['status__exact'] = '0'            
+        if not request.GET.has_key('responsable__id__exact'):
+            q['responsable__id__exact'] = '{}'.format(request.user.id)
+        request.GET = q
+        request.META['QUERY_STRING'] = request.GET.urlencode()
+        return super(tareaAdmin,self).changelist_view(request, extra_context=extra_context)
+
 @admin.register(pizarron)
 class pizarronAdmin(admin.ModelAdmin):
     list_display = ['id', 'responsable_link', 'proyecto_link', 'modulo_link', 'tarea_link', 'status', 'log', 'created_at']
@@ -275,6 +285,16 @@ class issueAdmin(admin.ModelAdmin):
             obj.created_by = request.user
         
         obj.save()
+
+    def changelist_view(self, request, extra_context=None):
+        q = request.GET.copy()
+        if not request.GET.has_key('status__exact'):
+            q['status__exact'] = '0'            
+        if not request.GET.has_key('asignado_a__id__exact'):
+            q['asignado_a__id__exact'] = '{}'.format(request.user.id)
+        request.GET = q
+        request.META['QUERY_STRING'] = request.GET.urlencode()
+        return super(issueAdmin,self).changelist_view(request, extra_context=extra_context)
 
 class citaForm(forms.ModelForm):
     class Meta:

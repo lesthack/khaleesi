@@ -15,7 +15,7 @@
           </div>
         {% endif %}
 
-        <div class="alert alert-info">{% blocktrans %}Puede obtener su Toke de Pushbullet <a href="https://www.pushbullet.com/account">aqui</a>.{% endblocktrans %}</div>
+        <div class="alert alert-info">{% blocktrans %}Puede obtener su Token de Pushbullet <a href="https://www.pushbullet.com/account">aqui</a>.{% endblocktrans %}</div>
         
         <fieldset class="module aligned">
           <div class="control-group{{ form.token.errors|yesno:' error,' }}">
@@ -37,6 +37,59 @@
               <div class="help-inline">{{ form.is_email_active.errors }}</div>
             </div>
           </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <label for="id_is_email_active" class="required">{% trans 'Tastypie API Key' %}:</label>
+            </div>
+            <div class="controls">{{ user.get_apikey }}</div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <label for="id_start_time" class="required">{% trans 'Hora inicial' %}:</label>
+            </div>
+            <div class="controls">
+                {{ form.start_time }}
+              <div class="help-inline">{{ form.start_time.errors }}</div>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <label for="id_start_time" class="required">{% trans 'Hora de comida' %}:</label>
+            </div>
+            <div class="controls">
+                {{ form.lunch_time }}
+              <div class="help-inline">{{ form.lunch_time.errors }}</div>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <label for="id_end_time" class="required">{% trans 'Hora final' %}:</label>
+            </div>
+            <div class="controls">
+                {{ form.end_time }}
+              <div class="help-inline">{{ form.end_time.errors }}</div>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <label for="id_dias" class="required">{% trans 'Días de Trabajo' %}:</label>
+            </div>
+            <div class="controls">
+                <div>{{ form.sun }} {{ form.sun.label }}</div>
+                <div>{{ form.mon }} {{ form.mon.label }}</div>
+                <div>{{ form.tue }} {{ form.tue.label }}</div>
+                <div>{{ form.wed }} {{ form.wed.label }}</div>
+                <div>{{ form.thu }} {{ form.thu.label }}</div>
+                <div>{{ form.fri }} {{ form.fri.label }}</div>
+                <div>{{ form.sat }} {{ form.sat.label }}</div>
+            </div>
+          </div>
+
         </fieldset>
 
         {% if saved = True %}
