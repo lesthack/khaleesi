@@ -11,6 +11,7 @@ from khaleesi.sensible import *
 from datetime import datetime
 import ast
 import random
+from github import Github
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
@@ -26,17 +27,26 @@ class UserProfile(models.Model):
     thu = models.BooleanField(default=True)
     fri = models.BooleanField(default=True)
     sat = models.BooleanField(default=False)
-    
+    github = models.CharField(max_length=50, blank=True, null= True)
+
+    def get_github_user(self):
+        if len(self.github) > 0:
+            usergit = Github(self.github)
+            return usergit
+        else:
+            return None
+
 class proyecto(models.Model):
     proyecto = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True, null=True)
-    link = models.CharField(max_length=1024, blank=True, null=True)    
+    link = models.CharField(max_length=1024, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
     created_by = models.ForeignKey(User, blank=True, null=True)
     deleted = models.BooleanField(default=False)
     deleted_by = models.ForeignKey(User, blank=True, null=True, default=None, related_name='proyecto_deleted_by')
     deleted_at = models.DateTimeField(blank=True, null=True, default=None)
+    repository = models.CharField(max_length=1024, blank=True, null=True)
 
     def __unicode__(self):
         return self.proyecto
@@ -52,6 +62,15 @@ class proyecto(models.Model):
     gantt_link.short_description = 'Gantt'
     gantt_link.allow_tags = True
 
+    def get_repo_info(self):
+        if len(self.repository) > 0:
+            repo_split = self.repository.split('/')
+            return (repo_split[3], repo_split[4])
+
+    def get_github_repo(self, gitUser):
+        username, reponame = self.get_repo_info()
+        return gitUser.get_user().get_repo(reponame)
+
 class modulo(models.Model):
     proyecto = models.ForeignKey(proyecto)
     modulo = models.CharField(max_length=100)
@@ -62,6 +81,7 @@ class modulo(models.Model):
     deleted = models.BooleanField(default=False)
     deleted_by = models.ForeignKey(User, blank=True, null=True, default=None, related_name='modulo_deleted_by')
     deleted_at = models.DateTimeField(blank=True, null=True, default=None)
+    color = models.CharField(max_length=6, blank=True, null=True)
 
     def __unicode__(self):
         return u'{0}->{1}'.format(self.proyecto, self.modulo)
@@ -87,6 +107,34 @@ class modulo(models.Model):
     def issues_cancelados(self):
         return format_html(u'<a href="/admin/track/issue/?q=&status__exact=3">{0}</a>', issue.objects.filter(modulo=self, status=3).count())
     issues_cancelados.short_description = 'Cancelados'
+
+    def create_github_label(self):
+        if len(self.proyecto.repository) > 0:
+            try:
+                view_user_profile = UserProfile.objects.get(user=self.created_by)
+                view_proyecto = self.proyecto
+                usergit = view_user_profile.get_github_user()
+                view_repo = view_proyecto.get_github_repo(usergit)
+                view_repo.create_label(self.modulo, self.color)
+            except Exception, e:
+                pass
+
+    def update_github_label(self):
+        if len(self.proyecto.repository) > 0:
+            try:
+                view_user_profile = UserProfile.objects.get(user=self.created_by)
+                view_proyecto = self.proyecto
+                usergit = view_user_profile.get_github_user()
+                view_repo = view_proyecto.get_github_repo(usergit)
+                exist_label = False
+                for label in view_repo.get_labels():
+                    if label.name == self.modulo:
+                        exist_label = True
+                        label.edit(self.modulo, self.color)
+                if not exist_label:
+                    self.create_github_label()
+            except Exception, e:
+                pass
 
 class tarea(models.Model):
     STATUS_CHOICES = (
@@ -335,6 +383,19 @@ class issue(models.Model):
 
     def get_notas(self):
         return issue_nota.objects.filter(issue=self).order_by('-created_at', 'like')
+
+    def github(self):
+        if len(self.modulo.proyecto.repository) > 0:
+            try:
+                view_user_profile = UserProfile.objects.get(user=self.created_by)
+                view_proyecto = self.modulo.proyecto
+                usergit = view_user_profile.get_github_user()
+                view_repo = view_proyecto.get_github_repo(usergit)
+                view_repo_label = view_repo.get_label(self.modulo.modulo)
+                view_repo.create_issue('Issue - Khaleesi #{}'.format(self.id), body = u'{}'.format(self.get_descripcion()), labels = [view_repo_label])
+            except Exception, e:
+                print 'Algo pasa'
+                pass
 
 class issue_nota(models.Model):
     issue = models.ForeignKey(issue)

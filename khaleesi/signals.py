@@ -32,6 +32,8 @@ def send_update(sender, instance, **kwargs):
         new_mail.send_to = to
         new_mail.save()
 
+        instance.github()
+
 @receiver(post_save, sender=tarea)
 def signal_post_save_tarea(sender, instance, **kwargs):
     subject = u'Khaleesi: {0} {1} {2}'.format("Tarea", instance.id, instance.get_status())
@@ -67,5 +69,12 @@ def signal_post_save_tarea(sender, instance, **kwargs):
         new_mail.body = html_content
         new_mail.send_to = to
         new_mail.save()
-        
+
+@receiver(post_save, sender=modulo)
+def signal_post_save_modulo(sender, instance, **kwargs):
+    if kwargs['created']:
+        instance.create_github_label()
+    else:
+        instance.update_github_label()
+
 models.signals.post_save.connect(create_api_key, sender=User)

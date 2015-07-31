@@ -28,6 +28,16 @@
             </div>
           </div>
 
+          <div class="control-group{{ form.token.errors|yesno:' error,' }}">
+            <div class="control-label">
+              <label for="id_github">{% trans 'GitHub Token' %}</label>
+            </div>
+            <div class="controls">
+              {{ form.github }}
+              <div class="help-inline">{{ form.token.eroors }}</div>
+            </div>
+          </div>
+
           <div class="control-group{{ form.is_mail_active.errors|yesno:' error,' }}">
             <div class="control-label">
               <label for="id_is_email_active" class="required">{% trans 'Recibir emails' %}:</label>

@@ -5,6 +5,7 @@ Django settings for khaleesi project.
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 import os, sys, traceback
+from sensible import *
 
 SECRET_KEY      = '(5hoxbl0s!p2s4h*5h=c-bggzz1srxbaj5o@u7zqjt@wki-0m+'
 BASE_DIR        = os.path.dirname(os.path.dirname(__file__))
@@ -13,13 +14,6 @@ TEMPLATE_DEBUG  = True
 HOST_NAME       = 'localhost'
 URL_HOST        = 'http://' + HOST_NAME
 ALLOWED_HOSTS   = ['localhost', HOST_NAME]
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 ADMINS = (
     ('Admin', 'admin@localhost.com')
