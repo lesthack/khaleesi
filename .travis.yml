@@ -5,8 +5,5 @@ install:
   - pip install -r requeriments.txt
   - pip install coveralls
 script:
-  - python manage.py test track
-  - python manage.py test changelog
-  - coverage run --source=track manage.py test track
-  - coverage run --source=changelog manage.py test changelog
+  - coverage run manage.py test track
 after_success: coveralls
