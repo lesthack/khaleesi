@@ -1,4 +1,8 @@
 # Khaleesi Beta
+
+[![Build Status](https://travis-ci.org/lesthack/khaleesi.svg)](https://travis-ci.org/lesthack/khaleesi)
+[![Coverage Status](https://coveralls.io/repos/lesthack/khaleesi/badge.svg?branch=master&service=github)](https://coveralls.io/github/lesthack/khaleesi?branch=master)
+
 ## Prerequisites ##
 
 - python >= 2.6
