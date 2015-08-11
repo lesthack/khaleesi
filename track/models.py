@@ -7,7 +7,6 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
 from tastypie.models import create_api_key
-from khaleesi.sensible import *
 from datetime import datetime
 import ast
 import random
