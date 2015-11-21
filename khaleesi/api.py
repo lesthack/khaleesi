@@ -15,6 +15,9 @@ class IssueResource(ModelResource):
         return super(IssueResource, self).get_object_list(request).filter(asignado_a=request.user)
 
 class TareaResource(ModelResource):
+    pizarron_status = fields.CharField(attribute='pizarron_status', null=True)
+    horas_reales = fields.CharField(attribute='horas_reales', null=True)
+
     class Meta:
         queryset = tarea.objects.all()
         resource_name = 'tarea'
@@ -22,6 +25,11 @@ class TareaResource(ModelResource):
 
     def get_object_list(self, request):
         return super(TareaResource, self).get_object_list(request).filter(responsable=request.user)
+
+    def dehydrate(self, bundle):
+        bundle.data['pizarron_status'] = bundle.obj.get_last_status_number()
+        bundle.data['horas_reales'] = bundle.obj.get_horas_reales()
+        return bundle
 
 class UserResource(ModelResource):
     class Meta:
