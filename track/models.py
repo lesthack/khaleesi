@@ -26,6 +26,7 @@ class UserProfile(models.Model):
     thu = models.BooleanField(default=True)
     fri = models.BooleanField(default=True)
     sat = models.BooleanField(default=False)
+    show_resume = models.BooleanField(default=False)
     
 class proyecto(models.Model):
     proyecto = models.CharField(max_length=100)

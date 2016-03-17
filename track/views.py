@@ -13,12 +13,12 @@ def user_profile(request):
     saved = None
 
     if request.method == 'POST':
-        profileForm = UserProfileForm(request.POST, instance=profileView)
+        profileForm = UserProfileForm(request.user, request.POST, instance=profileView)
         if profileForm.is_valid():
             profileForm.save()
             saved = True
     else:
-        profileForm = UserProfileForm(instance=profileView)
+        profileForm = UserProfileForm(request.user, instance=profileView)
 
     return render_to_response('profile_form.html', 
         {
