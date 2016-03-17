@@ -14,12 +14,12 @@ HOST_NAME       = 'localhost'
 URL_HOST        = 'http://' + HOST_NAME
 ALLOWED_HOSTS   = ['localhost', HOST_NAME]
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
+try:
+    from sensible import *
+except ImportError:
+    traceback.print_exc(file=sys.stdout)
+    print 'Help: \n\tCreate a file khaleesi\sensible.py \n\tSample https://gist.github.com/lesthack/0485bc3c94f340d73570'
+    sys.exit(0)
 
 ADMINS = (
     ('Admin', 'admin@localhost.com')
@@ -72,6 +72,7 @@ STATIC_URL = '/static/'
 CRONJOBS = [
     ('* * * * *', 'track.cron.mail_sending'),
     ('30 18 * * *', 'track.cron.mail_daily'),
+    ('* * * * *', 'track.cron.pushbullet_listening'),
 ]
 
 SUIT_CONFIG = {
@@ -83,6 +84,7 @@ SUIT_CONFIG = {
         {'app': 'track', 'icon':'icon-tasks', 'label': 'Dashboard', 'models': (
             'proyecto', 'modulo', 'tarea', 'issue', 'pizarron', 'cita'
         )},
+        {'label': 'Resumen', 'url': '/admin/resume/', 'icon': 'icon-folder-open'},
         {'label': 'Gantt', 'url': '/admin/gantt/', 'icon': 'icon-leaf'},
         {'label': 'Chrome Extension', 'url': 'https://chrome.google.com/webstore/detail/khaleesi-chrome-extension/lbgkpaeeldcdiapihpbflkjgaakmebjb?utm_source=chrome-app-launcher-info-dialog', 'icon': 'icon-fire'},
         {'label': 'Firefox Extension', 'url': 'https://drive.google.com/open?id=0B3lVvLj-naJYWW1nUTRlQWZnS0VITC1LWE8yMFo0NFMtR3Jv&authuser=0', 'icon': 'icon-fire'}
