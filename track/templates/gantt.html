@@ -110,7 +110,7 @@
                 </div>
             </fieldset>
         </div>
-        <div id="gantt_{{ proyecto.proyecto.id }}" class="gantt" style="height: {{ proyecto.height }}px;"></div>
+        <div id="gantt_{{ proyecto.proyecto.id }}" class="gantt" style="height: {{ proyecto.height|add:'45' }}px;"></div>
     </div>
     {% endfor %}
 {% endblock %}

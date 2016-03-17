@@ -169,8 +169,9 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
                     'involucrados': involucrados
                  },
                 'rows': rows,
+                'n': len(rows),
                 'colors': colors,
-                'height': 75*n
+                'height': 45*n
             })
 
     return all_proyectos
