@@ -6,6 +6,29 @@
         console.log('hosts: {{ URL_HOST }}');
     </script>
 {% endblock %}
+{% block extrastyle %}
+    <style>
+        @media print{
+            html, body {
+                width: 210mm;
+                height: 297mm;
+            }
+            html, body, table, text{
+                font-size: 10px;
+            }
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+            #content{
+                width: 100%;
+            }
+            .no-print{
+                display: none;
+            }
+        }
+    </style>
+{% endblock %}
 
 {% block userlinks %}
     {% url 'django-admindocs-docroot' as docsroot %}
