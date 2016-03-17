@@ -73,7 +73,7 @@ CRONJOBS = [
     ('* * * * *', 'track.cron.mail_sending'),
     ('30 18 * * *', 'track.cron.mail_daily'),
     ('* * * * *', 'track.cron.pushbullet_listening'),
-    ('48 16 * * *', 'track.cron.pausetask_listening'),
+    ('0 3 * * *', 'track.cron.pausetask_listening'),
 ]
 
 SUIT_CONFIG = {
