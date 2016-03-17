@@ -231,3 +231,23 @@ def board(request, tarea_id, status_id):
         return HttpResponseRedirect('/admin/track/tarea/')
     return HttpResponseRedirect('/admin/track/tarea/{0}/'.format(tarea_id))
 
+def resume(request):
+    """
+        Resumen informativo
+    """
+    list_users = []
+    for user in User.objects.filter(is_active=True, is_superuser=False, userprofile__show_resume=True):
+        proyectos = generate_gantt_filter(user_id=user.id)
+        list_users.append({
+            'user': user,
+            'proyectos': proyectos,
+            'height': sum([proyecto['height'] for proyecto in proyectos])
+        })
+
+    return render_to_response(
+        'resume.html', 
+        {
+            'list_users': list_users
+        },
+        context_instance=RequestContext(request)
+    )

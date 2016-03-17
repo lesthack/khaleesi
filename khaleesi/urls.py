@@ -19,6 +19,7 @@ v1_api.register(UserResource())
 urlpatterns = patterns('',
     url(r'^$', RedirectView.as_view(url='/admin')),
     url(r'^api/', include(v1_api.urls)),
+    url(r'^admin/resume/$', site.admin_view(resume)),
     url(r'^admin/gantt/$', site.admin_view(gantt_all)),
     url(r'^admin/json/board/$', site.admin_view(json_board)),
     url(r'^admin/auth/profile/$', site.admin_view(user_profile)),
