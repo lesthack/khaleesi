@@ -45,7 +45,7 @@ def mail_sending():
         item.send()
 
 def get_url_image():
-    meme_api_url = 'http://version1.api.memegenerator.net/Generators_Search?q=work&pageIndex=0&pageSize=24'
+    meme_api_url = 'http://version1.api.memegenerator.net/Generators_Search?q=geek&pageIndex=0&pageSize=24'
     imageUrl=''
     try:
         data = json.load(urllib2.urlopen(meme_api_url))
@@ -77,7 +77,7 @@ def pushbullet_listening():
             'type': 'image'
          },
         'end_time': {
-            'text': 'Tu día parece haber terminado. Buen trabajo. Recuerda que puedes detener todas tus tareas en nuestro enlace.',
+            'text': 'Tu día parece haber terminado. Buen trabajo. Recuerda que a las 6pm todas las tareas activas se pausarán automáticamente.',
             'filter': {'end_time': now_time},
             'type': 'link',
             'url': 'http://khaleesi.unisem.mx/admin/track/tarea/'
