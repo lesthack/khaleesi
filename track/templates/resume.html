@@ -1,0 +1,62 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Resumen General{% endblock %}
+{% block extrahead %}
+    <style>
+        .colM h1{
+            margin-bottom: inherit;
+        }
+        #content {                
+            padding: 10px;
+            margin: 0px;
+        }
+        .gantt{
+            width: 100%;
+        }
+    </style>
+    <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['timeline']}]}"></script>
+    <script type="text/javascript">
+        google.setOnLoadCallback(drawCharts);
+
+        function drawCharts() {
+            {% for item in list_users %}
+                var colors_{{ item.user.id }} = [{% for proyecto in item.proyectos %}{% for color in proyecto.colors %}'{{ color }}',{% endfor %}{% endfor%}];
+                var options_{{ item.user.id }} = {
+                    timeline: { groupByRowLabel: false },
+                    colors: colors_{{ item.user.id }},
+                };
+
+                var container_{{ item.user.id }} = document.getElementById('gantt_{{ item.user.id }}');
+                var chart_{{ item.user.id }} = new google.visualization.Timeline(container_{{ item.user.id }});
+
+                var dataTable_{{ item.user.id }} = new google.visualization.DataTable();
+                dataTable_{{ item.user.id }}.addColumn({ type: 'string', id: 'Modulo' });
+                dataTable_{{ item.user.id }}.addColumn({ type: 'string', id: 'Tarea' });
+                dataTable_{{ item.user.id }}.addColumn({ type: 'date', id: 'Inicia' });
+                dataTable_{{ item.user.id }}.addColumn({ type: 'date', id: 'Termina' });
+                
+                dataTable_{{ item.user.id }}.addRows([
+                {% for proyecto in item.proyectos %}
+                {% for row in proyecto.rows %}[ '[{{ proyecto.proyecto }}] {{ row.modulo }}', '{{ row.tarea }}' , new Date({{ row.fecha_inicial.year }}, {{ row.fecha_inicial.month|add:"-1" }}, {{ row.fecha_inicial.day }}), new Date({{ row.fecha_final.year }}, {{ row.fecha_final.month|add:"-1" }}, {{ row.fecha_final.day }})],{% endfor %}
+                {% endfor %}
+                ]);
+                
+                chart_{{ item.user.id }}.draw(dataTable_{{ item.user.id }}, options_{{ item.user.id }});
+            {% endfor %}
+        }
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="alert alert-info no-print">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <h4>Diagramas de Gantt</h4>
+        Solo es posible visualizar diagramas Gantt de proyectos con un número de tareas mayores o iguales a 2.
+    </div>
+    {% for item in list_users %}
+    <div class="usuario_{{ item.user.username }} form-horizontal" style="margin-bottom: 10px;">
+        <h1>{{ item.user.first_name }} {{ item.user.last_name }} (<a href="/admin/track/user/{{ item.user.id }}/gantt/">{{ item.user.username }}</a>)</h1>
+        <hr/>
+        <div id="gantt_{{ item.user.id }}" class="gantt" style="height: {{ item.height|add:'45' }}px;"></div>
+    </div>
+    {% endfor %}
+{% endblock %}

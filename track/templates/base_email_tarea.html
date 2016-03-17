@@ -1,10 +1,10 @@
 {% extends "base_email.html" %}
-{% block titulo%}Tarea {{ tarea.id }}{% endblock %}
+{% block titulo%}Tarea <a href="{{ URL_HOST }}/admin/track/tarea/{{ tarea.id }}/">{{ tarea.id }}</a>{% endblock %}
 {% block descripcion %}
     {% if es_nuevo and tarea.responsable == tarea.created_by %}
         Al parecer te has asignado una nueva tarea por resolver.
     {% elif es_nuevo and tarea.responsable != tarea.created_by %}
-        El usuario <b>{{ tarea.created_by.username }}</b> te ha asignado una nueva tarea, para aceptarla da click <a href="{{ URL_HOSTS }}/admin/track/tarea/{{ tarea.id }}/">aquí</a>
+        El usuario <b>{{ tarea.created_by.username }}</b> te ha asignado una nueva tarea, para aceptarla da click <a href="{{ URL_HOST }}/admin/track/tarea/{{ tarea.id }}/">aquí</a>
     {% elif not es_nuevo and tarea.responsable == tarea.created_by %}
         Has marcado como {{ tarea.get_status }} esta tarea.
     {% elif not es_nuevo and tarea.responsable != tarea.created_by %}
@@ -27,7 +27,7 @@
     <br>
     {% if not es_nuevo %}
         <p style="padding: 10px; text-align: center;">
-        <a href="{{ URL_HOSTS }}/admin/track/tarea/{{ tarea.id }}/" class="btn-primary">Ver Detalles</a>
+        <a href="{{ URL_HOST }}/admin/track/tarea/{{ tarea.id }}/" class="btn-primary">Ver Detalles</a>
         </p>
     {% endif %}
     <hr/>

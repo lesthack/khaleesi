@@ -99,12 +99,17 @@ class tareaForm(forms.ModelForm):
 
 @admin.register(tarea)
 class tareaAdmin(admin.ModelAdmin):
-    list_display = ['id', 'proyecto_link', 'modulo_link', 'nombre', 'fecha_inicial', 'fecha_final', 'get_horas_estimadas', 'get_horas_reales','status', 'get_pizarron', 'responsable_link', 'created_at', 'created_by']
+    list_display = ['id', 'proyecto_link', 'modulo_link', 'nombre', 'fecha_inicial', 'fecha_final', 'get_horas_estimadas', 'admin_horas_reales','status', 'get_pizarron', 'responsable_link', 'created_at', 'created_by']
     list_display_links = ['id', 'nombre']
     search_fields = ['nombre', 'descripcion', 'responsable__username']
     list_filter = ['modulo__proyecto__proyecto', 'modulo__modulo', 'status', 'responsable', 'fecha_inicial', 'fecha_final']
     actions = None
     form = tareaForm
+
+    def admin_horas_reales(self, obj):
+        return '%.2f' % round(obj.get_horas_reales(), 2)
+    admin_horas_reales.allow_tags = True
+    admin_horas_reales.short_description = 'Hrs Reales'
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -137,6 +142,16 @@ class tareaAdmin(admin.ModelAdmin):
         if obj:
             self.change_form_template = 'tarea_view_form.html'
         return super(tareaAdmin, self).get_form(request, obj, **kwargs)
+
+    def changelist_view(self, request, extra_context=None):
+        q = request.GET.copy()
+        if not request.GET.has_key('status__exact'):
+            q['status__exact'] = '0'            
+        if not request.GET.has_key('responsable__id__exact'):
+            q['responsable__id__exact'] = '{}'.format(request.user.id)
+        request.GET = q
+        request.META['QUERY_STRING'] = request.GET.urlencode()
+        return super(tareaAdmin,self).changelist_view(request, extra_context=extra_context)
 
 @admin.register(pizarron)
 class pizarronAdmin(admin.ModelAdmin):
@@ -276,6 +291,16 @@ class issueAdmin(admin.ModelAdmin):
         
         obj.save()
 
+    def changelist_view(self, request, extra_context=None):
+        q = request.GET.copy()
+        if not request.GET.has_key('status__exact'):
+            q['status__exact'] = '0'            
+        if not request.GET.has_key('asignado_a__id__exact'):
+            q['asignado_a__id__exact'] = '{}'.format(request.user.id)
+        request.GET = q
+        request.META['QUERY_STRING'] = request.GET.urlencode()
+        return super(issueAdmin,self).changelist_view(request, extra_context=extra_context)
+
 class citaForm(forms.ModelForm):
     class Meta:
         model = cita
@@ -316,7 +341,12 @@ class UserProfileInline(admin.StackedInline):
     verbose_name = 'Usuario'
 
 class UserAdmin(UserAdmin):
+    list_display = ['username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'show_resume']
     inlines = (UserProfileInline, )
+
+    def show_resume(self, obj):
+        return obj.userprofile.show_resume
+    show_resume.short_description = 'Resumen'
 
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)

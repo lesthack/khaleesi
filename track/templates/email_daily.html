@@ -108,7 +108,7 @@
             </tr>
             {% for issue in user.get_10_issues_abiertos %}
             <tr>
-                <td><a href="http://khaleesi.unisem.mx/admin/track/issue/28/">{{ issue.id }}</a></td>
+                <td><a href="{{ URL_HOST }}/admin/track/issue/{{ issue.id }}/">{{ issue.id }}</a></td>
                 <td>{{ issue.modulo.proyecto }}</td>
                 <td>{{ issue.modulo.modulo }}</td>
                 <td>{{ issue.tipo_issue }}</td>
@@ -116,11 +116,11 @@
                 <td>{{ issue.get_importancia }}</td>
                 <td>{{ issue.created_at|date:"d/m/Y" }}</td>
                 <td>{{ issue.created_by }}</td>
-                <td><a href="http://khaleesi.unisem.mx/admin/track/issue/28/">{{ issue.get_descripcion }}</a></td>
+                <td><a href="{{ URL_HOST }}/admin/track/issue/{{ issue.id }}/">{{ issue.get_descripcion }}</a></td>
             </tr>
             {% endfor %}
             <tr>
-                <td colspan="9"><a href="http://khaleesi.unisem.mx/admin/track/issue/?q=&asignado_a__id__exact={{ user.id }}">Ver todos...</a><td>
+                <td colspan="9"><a href="{{ URL_HOST }}/admin/track/issue/?q=&asignado_a__id__exact={{ user.id }}">Ver todos...</a><td>
             </tr>
         </table>
     {% endif %}

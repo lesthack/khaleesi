@@ -48,7 +48,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="alert alert-info">
+    <div class="alert alert-info no-print">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <h4>Diagramas de Gantt</h4>
         Solo es posible visualizar diagramas Gantt de proyectos con un número de tareas mayores o iguales a 2.
@@ -110,7 +110,7 @@
                 </div>
             </fieldset>
         </div>
-        <div id="gantt_{{ proyecto.proyecto.id }}" class="gantt" style="height: {{ proyecto.height }}px;"></div>
+        <div id="gantt_{{ proyecto.proyecto.id }}" class="gantt" style="height: {{ proyecto.height|add:'45' }}px;"></div>
     </div>
     {% endfor %}
 {% endblock %}

@@ -13,12 +13,12 @@ def user_profile(request):
     saved = None
 
     if request.method == 'POST':
-        profileForm = UserProfileForm(request.POST, instance=profileView)
+        profileForm = UserProfileForm(request.user, request.POST, instance=profileView)
         if profileForm.is_valid():
             profileForm.save()
             saved = True
     else:
-        profileForm = UserProfileForm(instance=profileView)
+        profileForm = UserProfileForm(request.user, instance=profileView)
 
     return render_to_response('profile_form.html', 
         {
@@ -169,8 +169,9 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
                     'involucrados': involucrados
                  },
                 'rows': rows,
+                'n': len(rows),
                 'colors': colors,
-                'height': 75*n
+                'height': 45*n
             })
 
     return all_proyectos
@@ -230,3 +231,23 @@ def board(request, tarea_id, status_id):
         return HttpResponseRedirect('/admin/track/tarea/')
     return HttpResponseRedirect('/admin/track/tarea/{0}/'.format(tarea_id))
 
+def resume(request):
+    """
+        Resumen informativo
+    """
+    list_users = []
+    for user in User.objects.filter(is_active=True, is_superuser=False, userprofile__show_resume=True):
+        proyectos = generate_gantt_filter(user_id=user.id)
+        list_users.append({
+            'user': user,
+            'proyectos': proyectos,
+            'height': sum([proyecto['height'] for proyecto in proyectos])
+        })
+
+    return render_to_response(
+        'resume.html', 
+        {
+            'list_users': list_users
+        },
+        context_instance=RequestContext(request)
+    )
