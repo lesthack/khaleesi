@@ -90,6 +90,17 @@
             </div>
           </div>
 
+          {% if request.user.is_superuser %}
+          <div class="control-group">
+            <div class="control-label">
+              <label for="id_resume" class="required">{% trans 'Mostrar Resumen' %}:</label>
+            </div>
+            <div class="controls">
+                <div>{{ form.show_resume }}</div>
+            </div>
+          </div>
+          {% endif %}
+
         </fieldset>
 
         {% if saved = True %}
