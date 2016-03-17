@@ -99,3 +99,16 @@ def pushbullet_listening():
                     print push
         except Exception as e:
             print 'Error: ', e
+
+def pausetask_listening():
+    tareas_list = tarea.objects.raw('SELECT * FROM track_tarea WHERE status=0 AND (SELECT status FROM track_pizarron WHERE tarea_id=track_tarea.id ORDER BY created_at DESC LIMIT 1 OFFSET 0)=2 ORDER BY responsable_id;')
+    pb = {}
+    for view_tarea in tareas_list:
+        new_pizarron = pizarron(tarea=view_tarea)
+        new_pizarron.status = 3
+        new_pizarron.created_by = view_tarea.created_by
+        new_pizarron.save()
+        token = view_tarea.created_by.userprofile.token
+        if token not in pb.keys():
+            pb[token] = Pushbullet(token)
+        pb[token].push_note('khaleesi notifications', u'La tarea {} ({}) se ha pausado de forma automática.'.format(view_tarea.id, view_tarea.nombre))
