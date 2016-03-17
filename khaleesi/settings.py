@@ -69,13 +69,6 @@ USE_TZ = True
 STATIC_ROOT = BASE_DIR + '/static'
 STATIC_URL = '/static/'
 
-CRONJOBS = [
-    ('* * * * *', 'track.cron.mail_sending'),
-    ('30 18 * * *', 'track.cron.mail_daily'),
-    ('* * * * *', 'track.cron.pushbullet_listening'),
-    ('0 3 * * *', 'track.cron.pausetask_listening'),
-]
-
 SUIT_CONFIG = {
     'ADMIN_NAME': 'Khaleesi',
     'MENU': [
