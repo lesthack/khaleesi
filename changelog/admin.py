@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib import admin
 from changelog.models import *
-from suit_redactor.widgets import RedactorWidget
+#from suit_redactor.widgets import RedactorWidget
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 import datetime

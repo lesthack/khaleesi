@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.html import format_html
@@ -6,12 +7,13 @@ from django.utils.html import strip_tags
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
-from tastypie.models import *
+#from tastypie.models import *
 from khaleesi.sensible import *
 from datetime import datetime
 import ast
 import random
 
+# Create your models here.
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
     is_email_active = models.BooleanField(default=True)
@@ -27,7 +29,7 @@ class UserProfile(models.Model):
     fri = models.BooleanField(default=True)
     sat = models.BooleanField(default=False)
     show_resume = models.BooleanField(default=False)
-    
+
 class proyecto(models.Model):
     proyecto = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True, null=True)
@@ -184,7 +186,7 @@ class tarea(models.Model):
     proyecto_link.admin_order_field = 'proyecto'
 
     def modulo_link(self):
-        return format_html('<a href="/admin/track/modulo/{0}/">{1}</a>', self.modulo.id, self.modulo.modulo)
+        return format_html(u'<a href="/admin/track/modulo/{0}/">{1}</a>', self.modulo.id, u'{}'.format(self.modulo.modulo))
     modulo_link.short_description = 'Modulo'
     modulo_link.allow_tags = True
     modulo_link.admin_order_field = 'modulo'
@@ -442,7 +444,8 @@ def user_get_tareas_recientes(self, n=3):
             LIMIT {n} OFFSET 0'.format(user_id=self.id, n=n))
 
 def user_get_apikey(self):
-    return '{}'.format(ApiKey.objects.get(user=self).key)
+    #return '{}'.format(ApiKey.objects.get(user=self).key)
+    return None
 
 User.add_to_class('get_tareas', user_get_tareas)
 User.add_to_class('get_tareas_abiertas', user_get_tareas_abiertas)
@@ -457,4 +460,4 @@ User.add_to_class('get_tareas_recientes', user_get_tareas_recientes)
 User.add_to_class('get_apikey', user_get_apikey)
 
 # Signals
-models.signals.post_save.connect(create_api_key, sender=User)
+# models.signals.post_save.connect(create_api_key, sender=User)

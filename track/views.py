@@ -20,12 +20,11 @@ def user_profile(request):
     else:
         profileForm = UserProfileForm(request.user, instance=profileView)
 
-    return render_to_response('profile_form.html', 
+    return render(request, 'profile_form.html', 
         {
             'form': profileForm,
-            'saved': saved,
-        },
-        context_instance = RequestContext(request)
+            'saved': saved
+        }
     )
 
 def json_board(request):
@@ -104,7 +103,7 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
         
         if user_id:
             list_tareas = list_tareas.filter(responsable_id=user_id)
-        
+
         rows = []
         colors = []
         horas_estimatadas_totales = 0
@@ -144,7 +143,7 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
         
         n = len(rows)       
                                 
-        if n > 1:
+        if (not user_id is None and n > 0) or (n > 1):
             all_proyectos.append({
                 'proyecto': view_proyecto,
                 'resume' : {
@@ -178,43 +177,19 @@ def generate_gantt_filter(proyecto_id=None, user_id=None, terminadas=True):
 
 def gantt_por_proyecto(request, proyecto_id):
     proyectos = generate_gantt_filter(proyecto_id=proyecto_id)
-    return render_to_response(
-        'gantt.html', 
-        {
-            'proyectos': proyectos,
-        },
-        context_instance=RequestContext(request)
-    )
+    return render(request, 'gantt.html', {'proyectos': proyectos})
 
 def gantt_por_usuario(request, user_id):
     proyectos = generate_gantt_filter(user_id=user_id)
-    return render_to_response(
-        'gantt.html', 
-        {
-            'proyectos': proyectos,
-        },
-        context_instance=RequestContext(request)
-    )
+    return render(request, 'gantt.html', {'proyectos': proyectos})
 
 def gantt_por_usuario_proyecto(request, user_id, proyecto_id):
     proyectos = generate_gantt_filter(proyecto_id=proyecto_id, user_id=user_id)
-    return render_to_response(
-        'gantt.html', 
-        {
-            'proyectos': proyectos,
-        },
-        context_instance=RequestContext(request)
-    )
+    return render(request, 'gantt.html', {'proyectos': proyectos})
 
 def gantt_all(request):
     proyectos = generate_gantt_filter(terminadas=True)
-    return render_to_response(
-        'gantt.html', 
-        {
-            'proyectos': proyectos,
-        },
-        context_instance=RequestContext(request)
-    )
+    return render(request, 'gantt.html', {'proyectos': proyectos})
 
 def board(request, tarea_id, status_id):
     try:
@@ -244,10 +219,4 @@ def resume(request):
             'height': sum([proyecto['height'] for proyecto in proyectos])
         })
 
-    return render_to_response(
-        'resume.html', 
-        {
-            'list_users': list_users
-        },
-        context_instance=RequestContext(request)
-    )
+    return render(request, 'resume.html', { 'list_users': list_users })

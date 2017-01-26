@@ -3,16 +3,14 @@
 Django settings for khaleesi project.
 """
 
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
 import os, sys, traceback
 
-SECRET_KEY      = '(5hoxbl0s!p2s4h*5h=c-bggzz1srxbaj5o@u7zqjt@wki-0m+'
-BASE_DIR        = os.path.dirname(os.path.dirname(__file__))
-DEBUG           = True
-TEMPLATE_DEBUG  = True
+SECRET_KEY = 'z6zel7bs)1!1=adwrh(1%hqup_)rra@57ytukv*66_+es3qh_c'
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DEBUG = True
 HOST_NAME       = 'localhost'
 URL_HOST        = 'http://' + HOST_NAME
-ALLOWED_HOSTS   = ['localhost', HOST_NAME]
+ALLOWED_HOSTS   = ['localhost', HOST_NAME, '192.168.33.20', '192.168.1.83', '192.168.16.21']
 
 try:
     from sensible import *
@@ -22,11 +20,13 @@ except ImportError:
     sys.exit(0)
 
 ADMINS = (
-    ('Admin', 'admin@localhost.com')
+    ('Admin', 'iam@jorgeluis.com.mx')
 )
 
-INSTALLED_APPS = (
-    'suit',
+INSTALLED_APPS = [
+    #'material',
+    #'material.admin',
+    'jet',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -34,31 +34,40 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-    'django_crontab',
-    'suit_redactor',
-    'tastypie',
+    #'tastypie',
     'changelog',
     'track',
-)
+]
 
-TEMPLATE_DIRS = (BASE_DIR+'/khaleesi/templates/',)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = TCP + (
-    'django.core.context_processors.request',
-    'khaleesi.context_processors.context_url_host',
-)
+]
 
 ROOT_URLCONF = 'khaleesi.urls'
 WSGI_APPLICATION = 'khaleesi.wsgi.application'
+
 
 LANGUAGE_CODE = 'es-mx'
 TIME_ZONE = 'America/Mexico_City'
@@ -69,18 +78,23 @@ USE_TZ = True
 STATIC_ROOT = BASE_DIR + '/static'
 STATIC_URL = '/static/'
 
-SUIT_CONFIG = {
-    'ADMIN_NAME': 'Khaleesi',
-    'MENU': [
-        {'app': 'changelog', 'icon':'icon-asterisk', 'models': (
-            'objeto', 'cambio',
-        )},
-        {'app': 'track', 'icon':'icon-tasks', 'label': 'Dashboard', 'models': (
-            'proyecto', 'modulo', 'tarea', 'issue', 'pizarron', 'cita'
-        )},
-        {'label': 'Resumen', 'url': '/admin/resume/', 'icon': 'icon-folder-open'},
-        {'label': 'Gantt', 'url': '/admin/gantt/', 'icon': 'icon-leaf'},
-        {'label': 'Chrome Extension', 'url': 'https://chrome.google.com/webstore/detail/khaleesi-chrome-extension/lbgkpaeeldcdiapihpbflkjgaakmebjb?utm_source=chrome-app-launcher-info-dialog', 'icon': 'icon-fire'},
-        {'label': 'Firefox Extension', 'url': 'https://drive.google.com/open?id=0B3lVvLj-naJYWW1nUTRlQWZnS0VITC1LWE8yMFo0NFMtR3Jv&authuser=0', 'icon': 'icon-fire'}
-    ]
-}
+# Password validation
+# https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+# Jet
+JET_SIDE_MENU_COMPACT = True

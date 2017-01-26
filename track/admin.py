@@ -9,7 +9,7 @@ import datetime
 class proyectoForm(forms.ModelForm):
     class Meta:
         model = proyecto
-        exclude = ['created_by', 'deleted','deleted_by','deleted_at']
+        exclude = ['created_by', 'deleted', 'deleted_by', 'deleted_at']
 
 @admin.register(proyecto)
 class proyectoAdmin(admin.ModelAdmin):
@@ -18,6 +18,8 @@ class proyectoAdmin(admin.ModelAdmin):
     search_fields = ['proyecto', 'link', 'descripcion', 'created_by__username', 'deleted', 'deleted_by__username']
     list_filter = ['created_at', 'updated_at', 'deleted']
     form = proyectoForm
+    actions_on_bottom = True
+    actions_on_top = False
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
@@ -88,6 +90,7 @@ class tareaForm(forms.ModelForm):
     class Meta:
         model = tarea
         exclude = ['created_by', 'created_at', 'updated_at', 'status']
+
     def clean(self):
         cleaned_data = super(tareaForm, self).clean()
 
