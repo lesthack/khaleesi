@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from track.models import *
+from khaleesi.hacks import *
 import datetime
 
 class proyectoForm(forms.ModelForm):
@@ -12,14 +13,19 @@ class proyectoForm(forms.ModelForm):
         exclude = ['created_by', 'deleted', 'deleted_by', 'deleted_at']
 
 @admin.register(proyecto)
-class proyectoAdmin(admin.ModelAdmin):
-    list_display = ['proyecto', 'link', 'descripcion', 'activos', 'cancelados', 'gantt_link', 'created_by', 'created_at', 'deleted', 'deleted_by']
+class proyectoAdmin(nModelAdmin):
+    list_display = ['proyecto', 'link_short', 'descripcion', 'activos', 'cancelados', 'gantt_link', 'created_by', 'created_at_simple']
     list_display_links = ['proyecto']
-    search_fields = ['proyecto', 'link', 'descripcion', 'created_by__username', 'deleted', 'deleted_by__username']
+    list_display_mobile = ['proyecto', 'link_short', 'activos', 'cancelados']
+    search_fields = ['proyecto', 'link', 'descripcion', 'created_by__username']
     list_filter = ['created_at', 'updated_at', 'deleted']
     form = proyectoForm
     actions_on_bottom = True
     actions_on_top = False
+
+    def get_queryset(self, request):
+        qs = super(proyectoAdmin, self).get_queryset(request).filter(deleted=False)
+        return qs
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
@@ -43,8 +49,8 @@ class proyectoAdmin(admin.ModelAdmin):
         obj.deleted_by = request.user
         obj.deleted_at = datetime.datetime.now()
         obj.save()
-
         return False
+
 
 class moduloForm(forms.ModelForm):
     class Meta:
@@ -52,13 +58,19 @@ class moduloForm(forms.ModelForm):
         exclude = ['created_by', 'deleted', 'deleted_by', 'deleted_at']
 
 @admin.register(modulo)
-class moduloAdmin(admin.ModelAdmin):
-    list_display = ['proyecto_link', 'modulo', 'descripcion', 'issues_resueltos', 'issues_abiertos', 'issues_abandonados', 'issues_cancelados', 'created_by', 'created_at', 'deleted', 'deleted_by']
+class moduloAdmin(nModelAdmin):
+    list_display = ['proyecto_link', 'modulo', 'descripcion', 'issues_resueltos', 'issues_abiertos', 'issues_abandonados', 'issues_cancelados', 'created_by', 'created_at_simple']
     list_display_links = ['modulo']
+    list_display_mobile = ['modulo', 'proyecto_link', 'issues_abiertos']
     search_fields = ['modulo', 'descripcion', 'created_by__username', 'deleted', 'deleted_by__username']
     list_filter = ['proyecto__proyecto', 'created_at','updated_at', 'deleted']
     ordering = ('proyecto__proyecto', 'modulo')
     form = moduloForm
+    list_per_page = 10
+
+    def get_queryset(self, request):
+        qs = super(moduloAdmin, self).get_queryset(request).filter(deleted=False)
+        return qs
 
     def get_readonly_fields(self, request, obj=None):
         if obj:
@@ -101,18 +113,20 @@ class tareaForm(forms.ModelForm):
         return cleaned_data
 
 @admin.register(tarea)
-class tareaAdmin(admin.ModelAdmin):
-    list_display = ['id', 'proyecto_link', 'modulo_link', 'nombre', 'fecha_inicial', 'fecha_final', 'get_horas_estimadas', 'admin_horas_reales','status', 'get_pizarron', 'responsable_link', 'created_at', 'created_by']
+class tareaAdmin(nModelAdmin):
+    list_display = ['id', 'proyecto_link', 'nombre', 'periodo', 'get_horas_estimadas', 'admin_horas_reales', 'get_pizarron', 'responsable_link', 'created_by', 'created_at_simple']
     list_display_links = ['id', 'nombre']
+    list_display_mobile = ['id', 'nombre']
     search_fields = ['nombre', 'descripcion', 'responsable__username']
-    list_filter = ['modulo__proyecto__proyecto', 'modulo__modulo', 'status', 'responsable', 'fecha_inicial', 'fecha_final']
+    list_filter = ['modulo__proyecto__proyecto', 'status', 'responsable', 'fecha_inicial', 'fecha_final']
     actions = None
     form = tareaForm
+    list_per_page = 10
 
     def admin_horas_reales(self, obj):
         return '%.2f' % round(obj.get_horas_reales(), 2)
     admin_horas_reales.allow_tags = True
-    admin_horas_reales.short_description = 'Hrs Reales'
+    admin_horas_reales.short_description = 'Hrs Rls.'
 
     def save_model(self, request, obj, form, change):
         if not change:
@@ -157,9 +171,10 @@ class tareaAdmin(admin.ModelAdmin):
         return super(tareaAdmin,self).changelist_view(request, extra_context=extra_context)
 
 @admin.register(pizarron)
-class pizarronAdmin(admin.ModelAdmin):
+class pizarronAdmin(nModelAdmin):
     list_display = ['id', 'responsable_link', 'proyecto_link', 'modulo_link', 'tarea_link', 'status', 'log', 'created_at']
     list_display_links = ['id']
+    list_display_mobile = ['id', 'tarea_link', 'status']
     search_fields = ['log']
     list_filter = ['tarea__modulo__proyecto__proyecto', 'tarea__modulo__modulo', 'tarea__responsable__username', 'status']
     exclude = ['created_by', 'log']
@@ -187,7 +202,7 @@ class tipo_issueForm(forms.ModelForm):
         exclude = ['created_by']
 
 @admin.register(tipo_issue)
-class tipo_issueAdmin(admin.ModelAdmin):
+class tipo_issueAdmin(nModelAdmin):
     list_display = ['tipo', 'created_by', 'created_at']
     list_display_links = ['tipo']
     search_fields = ['tipo']
@@ -204,7 +219,7 @@ class issue_notaForm(forms.ModelForm):
         exclude = ['created_by']
 
 @admin.register(issue_nota)
-class issue_notaAdmin(admin.ModelAdmin):
+class issue_notaAdmin(nModelAdmin):
     list_display = ['id', 'issue', 'nota', 'like', 'created_by', 'created_at']
     list_display_links = ['id']
     search_fields = ['id', 'issue__id', 'nota', 'issue__modulo__modulo', 'issue__modulo__proyecto__proyecto']
@@ -226,12 +241,13 @@ class issueForm(forms.ModelForm):
         exclude = ['updated_by', 'created_by', 'created_at', 'updated_at', 'status']
 
 @admin.register(issue)
-class issueAdmin(admin.ModelAdmin):
-    list_display = ['id', 'proyecto_link', 'modulo_link', 'tipo_issue', 'status', 'urgencia', 'importancia', 'get_descripcion', 'asignado_a', 'created_by', 'created_at']
-    list_display_links = ['id']
+class issueAdmin(nModelAdmin):
+    list_display = ['id', 'proyecto_link', 'modulo_link', 'tipo_issue', 'status', 'urgencia', 'importancia', 'get_descripcion', 'asignado_a', 'created_by', 'created_at_simple']
+    list_display_links = ['id', 'get_descripcion']
+    list_display_mobile = ['id', 'get_descripcion']
     search_fields = ['id', 'modulo__proyecto__proyecto', 'modulo__modulo', 'tipo_issue__tipo', 'status', 'urgencia', 'importancia', 'asignado_a__username', 'created_by__username', 'updated_by__username']
     ordering = ['status', '-urgencia','-importancia','-created_at']
-    list_filter = ['modulo__proyecto__proyecto', 'modulo__modulo', 'status', 'urgencia', 'importancia', 'asignado_a', 'created_by', 'created_at']
+    list_filter = ['modulo__proyecto__proyecto', 'status', 'asignado_a', 'created_by', 'created_at']
     list_per_page = 10
     form = issueForm
     
@@ -310,12 +326,17 @@ class citaForm(forms.ModelForm):
         exclude = ['created_by','deleted','deleted_by','deleted_at']
 
 @admin.register(cita)
-class citaAdmin(admin.ModelAdmin):
-    list_display = ['id', 'descripcion', 'deleted', 'created_by', 'created_at', 'updated_at']
+class citaAdmin(nModelAdmin):
+    list_display = ['id', 'descripcion', 'created_by', 'created_at', 'updated_at']
     list_display_links = ['id']
+    list_display_mobile = ['id', 'descripcion']
     list_filter = ['created_by', 'created_at']
     search_fields = ['descripcion', 'created_by__username']
     form = citaForm
+
+    def get_queryset(self, request):
+        qs = super(citaAdmin, self).get_queryset(request).filter(deleted=False)
+        return qs
 
     def save_model(self, request, obj, form, change):
         obj.save()

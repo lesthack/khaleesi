@@ -1,0 +1,16 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% block title %}{{ title }} | {{ 'Nibiru Password Manager' }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ 'Nibiru Password Manager' }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+{% endblock %}
+
+{% block extrajs %}
+{% comment %}
+<script type="text/javascript" src="{% static "js/custom.js" %}"></script>
+{% endcomment %}
+{% endblock %}

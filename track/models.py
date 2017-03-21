@@ -55,6 +55,12 @@ class proyecto(models.Model):
     gantt_link.short_description = 'Gantt'
     gantt_link.allow_tags = True
 
+    def link_short(self):
+        return format_html(u'<a href="{}"><span class="fa fa-link"></span></a>'.format(self.link))
+    link_short.short_description = 'Link'
+    link_short.allow_tags = True
+    link_short.admin_order_field = 'link'
+
 class modulo(models.Model):
     proyecto = models.ForeignKey(proyecto)
     modulo = models.CharField(max_length=100)
@@ -118,7 +124,7 @@ class tarea(models.Model):
         if self.horas_estimadas:
             return self.horas_estimadas
         return 0
-    get_horas_estimadas.short_description = 'Hrs Estimadas'
+    get_horas_estimadas.short_description = 'Hrs Est.'
 
     def get_horas_reales(self):
         horas = 0
@@ -139,7 +145,6 @@ class tarea(models.Model):
             last_status = view_pizarron.status
 
         return horas/3600
-    get_horas_reales.short_description = 'Hrs Reales'
 
     def get_last_log(self):
         try:
@@ -196,6 +201,20 @@ class tarea(models.Model):
     responsable_link.short_description = 'Responsable'
     responsable_link.allow_tags = True
     responsable_link.admin_order_field = 'responsable'
+
+    def periodo(self):
+        if self.fecha_final.year == self.fecha_inicial.year:
+            if self.fecha_final.month == self.fecha_inicial.month:
+                # Mismo año, mismo mes
+                return format_html('{} - {}, {} {}'.format(self.fecha_inicial.strftime('%d'), self.fecha_final.strftime('%d'), self.fecha_final.strftime('%B'), self.fecha_final.strftime('%Y')))
+            else:
+                # Mismo año, diferente mes
+                return format_html('{} - {}, {}'.format(self.fecha_inicial.strftime('%d de %B'), self.fecha_final.strftime('%d de %B'), self.fecha_final.strftime('%Y')))
+        else:
+            # Diferente Año
+            return format_html('{} - {}'.format(self.fecha_inicial.strftime('%B %Y'), self.fecha_final.strftime('%B %Y')))
+    periodo.short_description = 'Periodo'
+    periodo.allow_tags = False
 
 class pizarron(models.Model):
     STATUS_CHOICES = (
@@ -301,14 +320,19 @@ class issue(models.Model):
     def __unicode__(self):
         return '{0}'.format(self.id)
 
-    def get_descripcion(self):
-        sizestr = 80
+    def get_descripcion(self, sizestr=80):
         if len(self.descripcion) < sizestr:
             return strip_tags(self.descripcion)
         return strip_tags(self.descripcion[0:sizestr]) + '...'
     get_descripcion.short_description = 'Descripcion'
     get_descripcion.allow_tags = True
     get_descripcion.admin_order_field = 'descripcion'
+
+    def get_short_descripcion(self, sizestr=80):
+        return self.get_short_descripcion(40)
+    get_short_descripcion.short_description = 'Descripcion Corta'
+    get_short_descripcion.allow_tags = True
+    get_short_descripcion.admin_order_field = 'descripcion'
 
     def get_status(self):
         return self.STATUS_CHOICES[self.status][1]

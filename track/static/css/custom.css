@@ -1,0 +1,82 @@
+.field-spassword{
+    padding: 0px;
+}
+.hide-show-password{
+    padding: 0px;
+    margin: 0px;
+    background: #FFF;
+    border: 1px solid #DDD;
+    border-radius: 3px;
+    line-height: inherit;
+    font-size: 12px;
+    width: 180px;
+}
+.password-value{
+    display: inline-block;
+    width: 160px;
+    text-align: center;
+    padding: 5px 10px;
+}
+.eye{
+    display: inline-block;
+    width: 16px;
+}
+input.password-value{
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+    height: 20px;
+}
+input.password-value:hover, input.password-value:active{
+    border: 0px;
+}
+
+.field-value{
+    font-weight: bold;
+}
+
+/* Portrait tablet to landscape and desktop */
+@media (min-width: 768px){
+    .field-title{
+        display: inline-block;
+        min-width: 120px;
+    }
+    .field-value{
+        display: inline-block;
+    }
+    .item-view{
+        font-size: 150%;
+    }
+    .item-view .hide-show-password{
+        font-size: inherit;
+        width: 210px;
+    }
+    .item-view .password-value{
+        width: 170px;
+    }
+}
+/* Landscape phone to portrait tablet */
+@media (max-width: 767px) {
+    .noalways-visible{
+        display: none;
+    }
+    .form-row{
+        border-bottom: 1px solid #EEE;
+    }
+    .field-title{
+        font-size: 80%;
+        display: block;
+    }
+    .field-value{
+        display: block;
+    }
+    .item-view .hide-show-password{
+        width: 100%;
+    }
+    .item-view .password-value{
+        width: calc(100% - 25px);
+    }
+    .item-view input.password-value{
+        height: 30px;
+    }
+}
