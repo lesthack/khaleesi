@@ -56,7 +56,11 @@
 {% endblocktrans %}
 </p>
 {% endif %}
-
+<h1 class="login-title">
+    <i class="fa fa-cog fa-spin fa-fw"></i>
+    <span class="sr-only">Loading...</span>
+    khaleesi
+</h1>
 <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
   <div class="form-row">
     {{ form.username.errors }}

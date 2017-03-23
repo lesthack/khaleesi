@@ -327,7 +327,7 @@ class citaForm(forms.ModelForm):
 
 @admin.register(cita)
 class citaAdmin(nModelAdmin):
-    list_display = ['id', 'descripcion', 'created_by', 'created_at', 'updated_at']
+    list_display = ['id', 'get_descripcion', 'created_by', 'created_at_simple']
     list_display_links = ['id']
     list_display_mobile = ['id', 'descripcion']
     list_filter = ['created_by', 'created_at']

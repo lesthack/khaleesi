@@ -212,14 +212,23 @@ class nModelAdmin(admin.ModelAdmin):
             'admin/change_list.html'
         ], context)
 
+    def at_simple(self, obj):
+        try:
+            return obj.strftime('%b %d, %Y')
+        except:
+            return ''
+
+    def at_full(self, obj):
+        try:
+            return obj.strftime('%b %d, %Y %H:%M')
+        except:
+            return ''
+
     def created_at_simple(self, obj):
         """
             Solo para modelos que tengan el campo created_at
         """
-        try:
-            return obj.created_at.strftime('%b %d, %Y')
-        except:
-            return ''
+        return self.at_simple(obj.created_at)
     created_at_simple.short_description = 'Created At'
     created_at_simple.allow_tags = True
     created_at_simple.admin_order_field = 'created_at'
@@ -228,12 +237,28 @@ class nModelAdmin(admin.ModelAdmin):
         """
             Solo para modelos que tengan el campo created_at
         """
-        try:
-            return obj.created_at.strftime('%b %d, %Y %H:%M')
-        except:
-            return ''
+        return self.at_full(obj.created_at)
     created_at_full.short_description = 'Created At'
     created_at_full.allow_tags = True
     created_at_full.admin_order_field = 'created_at'
+
+
+    def updated_at_simple(self, obj):
+        """
+            Solo para modelos que tengan el campo updated_at
+        """
+        return self.at_simple(obj.updated_at)
+    updated_at_simple.short_description = 'Updated At'
+    updated_at_simple.allow_tags = True
+    updated_at_simple.admin_order_field = 'updated_at'
+
+    def updated_at_full(self, obj):
+        """
+            Solo para modelos que tengan el campo updated_at
+        """
+        return self.at_full(obj.updated_at)
+    updated_at_full.short_description = 'Updated At'
+    updated_at_full.allow_tags = True
+    updated_at_full.admin_order_field = 'updated_at'
 
 

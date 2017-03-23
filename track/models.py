@@ -420,6 +420,14 @@ class cita(models.Model):
     def __unicode__(self):
         return self.descripcion
 
+    def get_descripcion(self, sizestr=100):
+        if len(self.descripcion) < sizestr:
+            return strip_tags(self.descripcion)
+        return strip_tags(self.descripcion[0:sizestr]) + '...'
+    get_descripcion.short_description = 'Descripcion'
+    get_descripcion.allow_tags = True
+    get_descripcion.admin_order_field = 'descripcion'
+
 # Extensiones al modelo User [Tal vez deberian separarse en otro archivo]
 def user_get_tareas(self, status=[0,1]):
     """

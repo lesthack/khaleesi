@@ -6,16 +6,16 @@
         <div class="submit-row clearfix">
             <p>Marcar como:</p>
             {% if status_log == 0 %}
-                <button type="submit" class="btn btn-info">Aceptar y marcar como Pendiente</button>
+                <button type="submit" class="button btn btn-info">Aceptar y marcar como Pendiente</button>
             {% elif status_log == 1 or status_log == 6 %}
-                <a href="./board/2/" class="btn btn-primary" style="width: 130px;">En Proceso</a>
+                <a href="./board/2/" class="button btn btn-primary" style="width: 130px;">En Proceso</a>
             {% elif status_log == 2 %}
-                <a href="./board/3/" class="btn btn-warning" style="width: 130px;">Pausado</a>
-                <a href="./board/4/" class="btn btn-success" style="width: 130px;">Terminado</a>
-                <a href="./board/5/" class="btn btn-danger" style="width: 130px;">Bloqueado</a>
+                <a href="./board/3/" class="button btn btn-warning " style="width: 130px;">Pausado</a>
+                <a href="./board/4/" class="button btn btn-success" style="width: 130px;">Terminado</a>
+                <a href="./board/5/" class="button btn btn-danger" style="width: 130px;">Bloqueado</a>
             {% elif status_log == 3 or status_log == 5 %}
-                <a href="./board/2/" class="btn btn-primary" style="width: 130px;">En Proceso</a>
-                <a href="./board/1/" class="btn btn-inverse" style="width: 130px;">Pendiente</a>
+                <a href="./board/2/" class="button btn btn-primary" style="width: 130px;">En Proceso</a>
+                <a href="./board/1/" class="button btn btn-inverse" style="width: 130px;">Pendiente</a>
             {% elif status_log == 4 %}
                 <a href="#" class="btn btn-primary" style="width: 130px;">Reasignar</a>
             {% endif %}

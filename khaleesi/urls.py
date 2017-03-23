@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^admin/track/user/(?P<user_id>\d+)/gantt/$', site.admin_view(gantt_por_usuario)),
     url(r'^admin/track/user/(?P<user_id>\d+)/proyecto/(?P<proyecto_id>\d+)/gantt/$', site.admin_view(gantt_por_usuario_proyecto)),
     url(r'^admin/track/tarea/(?P<tarea_id>\d+)/board/(?P<status_id>\d+)/$', site.admin_view(board)),
+    url(r'^admin/track/tarea/(?P<tarea_id>\d+)/change/board/(?P<status_id>\d+)/$', site.admin_view(board)),
     url(r'^jet/', include('jet.urls', 'jet')),
     url(r'^admin/', admin.site.urls),
 ]
