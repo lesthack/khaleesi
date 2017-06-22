@@ -10,7 +10,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = True
 HOST_NAME       = 'localhost'
 URL_HOST        = 'http://' + HOST_NAME
-ALLOWED_HOSTS   = ['localhost', HOST_NAME, '192.168.33.20', '192.168.1.83', '192.168.16.21', '192.168.1.84']
+ALLOWED_HOSTS   = ['localhost', HOST_NAME]
 
 try:
     from sensible import *
