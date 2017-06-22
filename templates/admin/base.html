@@ -65,6 +65,7 @@
                         <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
                     {% endif %}
                 {% endif %}
+                <a href="{% url 'user_profile' %}">{% trans 'Ver Perfil' %}</a> /
                 {% if user.has_usable_password %}
                 <a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a> /
                 {% endif %}
