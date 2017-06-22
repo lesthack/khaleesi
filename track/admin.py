@@ -51,7 +51,6 @@ class proyectoAdmin(nModelAdmin):
         obj.save()
         return False
 
-
 class moduloForm(forms.ModelForm):
     class Meta:
         model = modulo
