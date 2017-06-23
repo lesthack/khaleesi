@@ -4,6 +4,13 @@
 {% block bodyclass %}Profile{% endblock %}
 
 {% block content %}
+<style>
+    label{
+        float: inherit !important;
+        width: inherit !important;
+        display: inline-block !important;
+    }
+</style>
   <div id="content-main">
     <form action="" method="post" id="profile_form" class="form-horizontal">
       {% csrf_token %}  
@@ -30,20 +37,22 @@
 
           <div class="control-group{{ form.is_mail_active.errors|yesno:' error,' }}">
             <div class="control-label">
-              <label for="id_is_email_active" class="required">{% trans 'Recibir emails' %}:</label>
+              <label class="required">{% trans 'Recibir emails' %}:</label>
             </div>
             <div class="controls">
-              {{ form.is_email_active }}
+              <div>{{ form.is_email_active }}</div>
               <div class="help-inline">{{ form.is_email_active.errors }}</div>
             </div>
           </div>
 
+          {% comment %}
           <div class="control-group">
             <div class="control-label">
               <label for="id_is_email_active" class="required">{% trans 'Tastypie API Key' %}:</label>
             </div>
             <div class="controls">{{ user.get_apikey }}</div>
           </div>
+          {% endcomment %}
 
           <div class="control-group">
             <div class="control-label">
