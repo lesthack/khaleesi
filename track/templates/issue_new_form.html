@@ -1,7 +1,9 @@
 {% extends "admin/change_form.html" %}
+{% comment %}
 {% block after_field_sets %}
-<script src="/static/js/advanced.js"></script>
-<script src="/static/js/wysihtml5-0.3.0.min.js"></script>
+{% load static %}
+<script src="{% static "js/advanced.js" %}"></script>
+<script src="{% static "js/wysihtml5-0.3.0.min.js" %}"></script>
 <style>
   .wysihtml5-command-active {
     font-weight: bold;
@@ -74,3 +76,4 @@
 	});
 </script>
 {% endblock %}
+{% endcomment %}
