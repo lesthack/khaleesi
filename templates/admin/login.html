@@ -1,25 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static %}
-
-{% block extrastyle %}{{ block.super }}
-<link rel="stylesheet" type="text/css" href="{% static "admin/css/login.css" %}" />
-<style>
-    .google-button{
-        display: inline-block; 
-        width: 80%; 
-        font-size: 0.85714rem; 
-        border-radius: 0.28571rem; 
-        background: red; 
-        color: white !important; 
-        text-transform: uppercase; 
-        padding: 8px 0px;
-    }
-    .google-button:hover{
-        background: #A901DB;
-    }
-</style>
-{{ form.media }}
-{% endblock %}
+{% load i18n admin_static %}
 
 {% block bodyclass %}{{ block.super }} login{% endblock %}
 
@@ -31,7 +11,13 @@
 
 {% block breadcrumbs %}{% endblock %}
 
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "core/css/login.css" %}" />
+{% endblock %}
+
 {% block content %}
+
 {% if form.errors and not form.non_field_errors %}
 <p class="errornote">
 {% if form.errors.items|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
@@ -47,15 +33,6 @@
 {% endif %}
 
 <div id="content-main">
-
-{% if user.is_authenticated %}
-<p class="errornote">
-{% blocktrans trimmed %}
-    You are authenticated as {{ username }}, but are not authorized to
-    access this page. Would you like to login to a different account?
-{% endblocktrans %}
-</p>
-{% endif %}
 <h1 class="login-title">
     <i class="fa fa-cog fa-spin fa-fw"></i>
     <span class="sr-only">Loading...</span>
@@ -77,15 +54,13 @@
     <a href="{{ password_reset_url }}">{% trans 'Forgotten your password or username?' %}</a>
   </div>
   {% endif %}
-  <div class="submit-row" style="text-align: center;">
-    <label>&nbsp;</label><input type="submit" value="{% trans 'Log in' %}" style="width: 80%; display: inline-block;" />
+  <div class="submit-row">
+    <label>&nbsp;</label><input type="submit" value="{% trans 'Log in' %}" />
   </div>
-  {% comment %}
-  <div style="margin-top: 15px; text-align: center;">
-      <a href="{% url "social:begin" "google-oauth2" %}" class="google-button">Google Account</a>
-  </div>
-  {% endcomment %}
 </form>
 
+<script type="text/javascript">
+document.getElementById('id_username').focus()
+</script>
 </div>
 {% endblock %}

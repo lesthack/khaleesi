@@ -131,3 +131,30 @@ JET_THEMES = [
 
 JET_DEFAULT_THEME = 'light-gray'
 JET_SIDE_MENU_COMPACT = False
+
+JET_SIDE_MENU_ITEMS = [
+    {
+        'label': 'Admin',
+        'items': [
+            {'name': 'track.proyecto'},
+            {'name': 'track.modulo'},
+            {'name': 'track.cita'}
+        ]
+    },
+    {
+        'label': 'Tracking',
+        'items': [
+            {'name': 'track.tarea'},
+            {'name': 'track.issue'},
+            {'name': 'track.pizarron'},
+            {'label': 'Resumen', 'url':'/admin/resume/'}
+        ]
+    },
+    {
+        'label': 'Log',
+        'items': [
+            {'name': 'changelog.objeto'},
+            {'name': 'changelog.cambio'},
+        ]
+    }
+]
