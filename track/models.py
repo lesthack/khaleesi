@@ -181,8 +181,18 @@ class tarea(models.Model):
             return -1
 
     def get_pizarron(self):
-        return format_html(u'<span style="color: {1};">{0}</span>'.format(self.get_last_status(), self.get_color_status()))
+        html = u'<span style="color: {1};">{0}</span>'.format(self.get_last_status(), self.get_color_status())
+        return format_html(html)
     get_pizarron.short_description = 'Pizarrón'
+
+    def get_op(self):
+        html = u''
+        if self.get_last_status_number() in [0, 1, 3]:
+            html += '<a href="/admin/track/tarea/{tarea_id}/change/board/2/?list=True" title="Comenzar Tarea" style="margin-left: 4px;"><span class="fa fa-play" aria-hidden="true" /></a>'.format(tarea_id=self.id)
+        if self.get_last_status_number() in [2]:
+            html += '<a href="/admin/track/tarea/{tarea_id}/change/board/3/?list=True" title="Pausar Tarea" style="margin-left: 4px;"><span class="fa fa-pause" aria-hidden="true" /></a>'.format(tarea_id=self.id)
+        return format_html(html)
+    get_op.short_description = 'OP'
 
     def proyecto_link(self):
         return self.modulo.proyecto_link()

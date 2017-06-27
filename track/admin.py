@@ -113,7 +113,7 @@ class tareaForm(forms.ModelForm):
 
 @admin.register(tarea)
 class tareaAdmin(nModelAdmin):
-    list_display = ['id', 'proyecto_link', 'nombre', 'periodo', 'get_horas_estimadas', 'admin_horas_reales', 'get_pizarron', 'responsable_link', 'created_by', 'created_at_simple']
+    list_display = ['id', 'proyecto_link', 'nombre', 'periodo', 'get_horas_estimadas', 'admin_horas_reales', 'get_op', 'get_pizarron', 'responsable_link', 'created_by', 'created_at_simple']
     list_display_links = ['id', 'nombre']
     list_display_mobile = ['id', 'nombre']
     search_fields = ['nombre', 'descripcion', 'responsable__username']

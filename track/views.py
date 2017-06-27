@@ -192,6 +192,7 @@ def gantt_all(request):
     return render(request, 'gantt.html', {'proyectos': proyectos})
 
 def board(request, tarea_id, status_id):
+    redirect_response = '/admin/track/tarea/{0}/'.format(tarea_id)
     try:
         view_tarea = tarea.objects.get(id=tarea_id)
         if view_tarea.responsable != request.user or status_id in [6, 7]:
@@ -200,11 +201,14 @@ def board(request, tarea_id, status_id):
         new_pizarron.status = int(status_id)
         new_pizarron.created_by = request.user
         new_pizarron.save()
+
+        if 'list' in request.GET:
+            redirect_response = '/admin/track/tarea/'
     except IndexError:
         pass
     except tarea.DoesNotExist:
         return HttpResponseRedirect('/admin/track/tarea/')
-    return HttpResponseRedirect('/admin/track/tarea/{0}/'.format(tarea_id))
+    return HttpResponseRedirect(redirect_response)
 
 def resume(request):
     """
