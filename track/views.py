@@ -4,7 +4,9 @@ from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import PermissionDenied
+from django.db import connection, transaction
 from track.models import *
+from control.models import *
 from khaleesi.forms import UserProfileForm
 from datetime import datetime
 
@@ -190,6 +192,47 @@ def gantt_por_usuario_proyecto(request, user_id, proyecto_id):
 def gantt_all(request):
     proyectos = generate_gantt_filter(terminadas=True)
     return render(request, 'gantt.html', {'proyectos': proyectos})
+
+def view_xml(request, token=None, v=None):
+    if not token:
+        token = request.GET.get('token', None)
+
+    cursor = connection.cursor()
+    query = None
+
+    try:
+        view_token = token.objects.get(token=token)
+
+        #view_perfil = perfil.objects.get(token=token)
+        
+        #if v:
+        #    vista_view = vista.objects.get(nombre=v)
+
+        #    if vista_view.for_admin == True and not view_perfil.user.is_superuser:
+        #        raise NameError('NoAdmin')
+
+        #    if vista_view.group and view_perfil.user.groups.filter(id=vista_view.group.id).count() == 0:
+        #        raise NameError('NoAdmin')
+
+        #    if request.GET.get('google', None) or request.GET.get('g', None):
+        #        query = "SELECT table_to_xml('{0}', FALSE, FALSE, '');".format(v)
+        #    else:
+        #        query = "SELECT table_to_xml('{0}', FALSE, FALSE, '{0}_xml');".format(v)
+
+    except Exception as e:
+        print 'Error: ', e
+
+    fetchall = ['']
+    if query:
+        try:
+            cursor.execute(query)
+            fetchall = cursor.fetchall()
+        finally:
+            cursor.close()
+
+    response = HttpResponse(fetchall[0], content_type="text/xml")
+    response['Content-Disposition'] = 'filename="{}.xml"'.format(v)
+    return response
 
 def board(request, tarea_id, status_id):
     redirect_response = '/admin/track/tarea/{0}/'.format(tarea_id)
