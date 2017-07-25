@@ -3,6 +3,7 @@
 
 # Vim backups
 *.swp
+*.swo
 
 # Scract backups
 *~
