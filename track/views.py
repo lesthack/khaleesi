@@ -5,6 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import PermissionDenied
 from django.db import connection, transaction
+from django.utils.html import escape
 from track.models import *
 from control.models import *
 from khaleesi.forms import UserProfileForm
@@ -219,7 +220,11 @@ def view_xml(request, intoken, v=None):
                 i = 0
                 xmlstr += '<row>'
                 for column in columns:
-                    xmlstr += u'<{column_name}>{value}</{column_name}>'.format(column_name=column[0], value=row[i])
+                    if type(row[i]) is str or type(row[i]) is unicode:
+                        val = escape(row[i].encode('utf8'))
+                    else:
+                        val = row[i]
+                    xmlstr += u'<{column_name}>{value}</{column_name}>'.format(column_name=column[0].decode('utf8'), value=val)
                     i += 1
                 xmlstr += u'</row>'
                 row = cursor.fetchone()
