@@ -21,7 +21,7 @@ urlpatterns = [
     #url(r'^api/', include(v1_api.urls)),
     url(r'^admin/resume/$', site.admin_view(resume)),
     url(r'^admin/gantt/$', site.admin_view(gantt_all)),
-    url(r'^admin/view/(?P<token>[a-f0-9]+)/(?P<v>\w+)/$', site.admin_view(view_xml)),
+    url(r'^admin/view/(?P<intoken>[a-f0-9]+)/(?P<v>\w+)/$', site.admin_view(view_xml)),
     url(r'^admin/json/board/$', site.admin_view(json_board)),
     url(r'^admin/auth/profile/$', site.admin_view(user_profile), name='user_profile'),
     url(r'^admin/track/proyecto/(?P<proyecto_id>\d+)/gantt/$', site.admin_view(gantt_por_proyecto)),

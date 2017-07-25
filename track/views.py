@@ -193,44 +193,44 @@ def gantt_all(request):
     proyectos = generate_gantt_filter(terminadas=True)
     return render(request, 'gantt.html', {'proyectos': proyectos})
 
-def view_xml(request, token=None, v=None):
-    if not token:
-        token = request.GET.get('token', None)
-
+def view_xml(request, intoken, v=None):
     cursor = connection.cursor()
     query = None
 
     try:
-        view_token = token.objects.get(token=token)
-
-        #view_perfil = perfil.objects.get(token=token)
-        
-        #if v:
-        #    vista_view = vista.objects.get(nombre=v)
-
-        #    if vista_view.for_admin == True and not view_perfil.user.is_superuser:
-        #        raise NameError('NoAdmin')
-
-        #    if vista_view.group and view_perfil.user.groups.filter(id=vista_view.group.id).count() == 0:
-        #        raise NameError('NoAdmin')
-
-        #    if request.GET.get('google', None) or request.GET.get('g', None):
-        #        query = "SELECT table_to_xml('{0}', FALSE, FALSE, '');".format(v)
-        #    else:
-        #        query = "SELECT table_to_xml('{0}', FALSE, FALSE, '{0}_xml');".format(v)
-
+        view_token = token.objects.get(token=intoken)
+        view_sqlview = sqlview.objects.get(sql_name=v, group__in=request.user.groups.all(), enable=True)
+        query = "SELECT * FROM {};".format(v)
+    except token.DoesNotExist:
+        print 'Invalid Token'
+    except sqlview.DoesNotExist:
+        print 'SQLView not found'
     except Exception as e:
         print 'Error: ', e
 
-    fetchall = ['']
+    xmlstr = u''
     if query:
         try:
+            xmlstr = u'<{} xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'.format(v)
             cursor.execute(query)
-            fetchall = cursor.fetchall()
+            row = cursor.fetchone()
+            columns = cursor.description
+            while(row!=None):
+                i = 0
+                xmlstr += '<row>'
+                for column in columns:
+                    xmlstr += u'<{column_name}>{value}</{column_name}>'.format(column_name=column[0], value=row[i])
+                    i += 1
+                xmlstr += u'</row>'
+                row = cursor.fetchone()
+            xmlstr += u'</{}>'.format(v)
+
+            new_uses_view = uses_view(user=request.user, sqlview=view_sqlview)
+            new_uses_view.save()
         finally:
             cursor.close()
 
-    response = HttpResponse(fetchall[0], content_type="text/xml")
+    response = HttpResponse(xmlstr, content_type="text/xml")
     response['Content-Disposition'] = 'filename="{}.xml"'.format(v)
     return response
 

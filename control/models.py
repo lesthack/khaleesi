@@ -22,7 +22,7 @@ class sqlview(models.Model):
     sql_name = models.CharField(max_length=50)
     title = models.CharField(max_length=100)
     enable = models.BooleanField(default=False)
-    group = models.ForeignKey(Group, blank=True, null=True)
+    group = models.ManyToManyField(Group)
 
     def __unicode__(self):
         return u'{}: {}'.format(self.title, self.sql_name)

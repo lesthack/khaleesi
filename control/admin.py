@@ -29,3 +29,10 @@ class tokenAdmin(nModelAdmin):
     list_filter = ['begins_at', 'expire_at']
     form = tokenForm
 
+@admin.register(sqlview)
+class sqlviewAdmin(nModelAdmin):
+    list_display = ['sql_name', 'title', 'enable']
+    list_display_links = ['sql_name', 'title']
+    list_display_mobile = ['sql_name', 'enable']
+    search_fields = ['sql_name', 'title']
+    list_filter = ['enable', 'group']

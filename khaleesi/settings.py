@@ -140,7 +140,8 @@ JET_SIDE_MENU_ITEMS = [
             {'name': 'track.proyecto'},
             {'name': 'track.modulo'},
             {'name': 'track.cita'},
-            {'name': 'control.token'}
+            {'name': 'control.token'},
+            {'name': 'control.sqlview'}
         ]
     },
     {
