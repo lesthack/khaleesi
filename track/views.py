@@ -200,7 +200,8 @@ def view_xml(request, intoken, v=None):
 
     try:
         view_token = token.objects.get(token=intoken)
-        view_sqlview = sqlview.objects.get(sql_name=v, group__in=request.user.groups.all(), enable=True)
+        user = view_token.user
+        view_sqlview = sqlview.objects.get(sql_name=v, group__in=user.groups.all(), enable=True)
         query = "SELECT * FROM {};".format(v)
     except token.DoesNotExist:
         print 'Invalid Token'
@@ -230,7 +231,7 @@ def view_xml(request, intoken, v=None):
                 row = cursor.fetchone()
             xmlstr += u'</{}>'.format(v)
 
-            new_uses_view = uses_view(user=request.user, sqlview=view_sqlview)
+            new_uses_view = uses_view(user=user, sqlview=view_sqlview)
             new_uses_view.save()
         finally:
             cursor.close()

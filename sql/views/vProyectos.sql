@@ -37,4 +37,5 @@ WHERE deleted = False;
 SELECT * FROM vProyectos;
 SELECT * FROM vReporteTareas;
 SELECT * FROM track_pizarron;
-SELECT * FROM vStatusTarea
+SELECT * FROM vStatusTarea;
+SELECT * FROM control_uses_view
