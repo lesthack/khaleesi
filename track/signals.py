@@ -17,11 +17,11 @@ def send_update(sender, instance, **kwargs):
         to = instance.created_by
 
     if to:
-        c = Context({
+        c = {
             'issue': instance,
             'es_nuevo': kwargs['created'],
             'URL_HOST': URL_HOST
-        })
+        }
         template_html = get_template('base_email_issue.html')
         html_content = template_html.render(c)
 
