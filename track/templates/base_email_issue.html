@@ -32,9 +32,9 @@
         <h4>Notas:</h4>
         <div class="notas">
             {% for nota in issue.get_notas %}
-            <div class="nota" style="margin-top: 10px;">
-                <p><b>{{ nota.created_at }} por {{ nota.created_by.username }}</b></p>
-                <p>{{ nota.nota|safe|linebreaks }}</p>
+            <div class="nota" style="margin-top: 10px; margin-bottom: 5px;">
+                <p>Nota por el usuario <b>{{ nota.created_by.username }} [<small>{{ nota.created_at }}</small>]</b></p>
+                <div style="margin-left: 10px;">{{ nota.nota|safe|linebreaks }}</div>
             </div>
             {% endfor %}
         </div>

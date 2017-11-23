@@ -33,7 +33,7 @@ class UserProfile(models.Model):
 class proyecto(models.Model):
     proyecto = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True, null=True)
-    link = models.CharField(max_length=1024, blank=True, null=True)    
+    link = models.CharField(max_length=1024, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
     created_by = models.ForeignKey(User, blank=True, null=True)
@@ -84,7 +84,7 @@ class modulo(models.Model):
     def issues_resueltos(self):
         return format_html(u'<a href="/admin/track/issue/?q=&modulo__modulo={0}&status__exact=1">{1}</a>', self.modulo, issue.objects.filter(modulo=self, status=1).count())
     issues_resueltos.short_description = 'Resueltos'
-    
+
     def issues_abiertos(self):
         return format_html(u'<a href="/admin/track/issue/?q=&status__exact=0">{0}</a>', issue.objects.filter(modulo=self, status=0).count())
     issues_abiertos.short_description = 'Abiertos'
@@ -132,9 +132,9 @@ class tarea(models.Model):
         datefin = None
         last_status = None
         list_pizarron = pizarron.objects.filter(tarea=self).order_by('created_at')
-        
+
         for view_pizarron in list_pizarron:
-            if view_pizarron.status == 2 and last_status != 2:                
+            if view_pizarron.status == 2 and last_status != 2:
                 dateini = view_pizarron.created_at
             if view_pizarron.status != 2:
                 datefin = view_pizarron.created_at
@@ -243,10 +243,10 @@ class pizarron(models.Model):
     created_by = models.ForeignKey(User)
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
-    
+
     def __unicode__(self):
         return '{}'.format(self.id)
-    
+
     def save(self, *args, **kwargs):
         if self.status > 1:
             self.log = u'{0} ha marcado como {1} la tarea {2}.'.format(self.created_by.username, self.get_status(), self.tarea.id)
@@ -293,7 +293,7 @@ class tipo_issue(models.Model):
     created_at = models.DateTimeField(auto_now_add = True)
     updated_at = models.DateTimeField(auto_now = True)
     created_by = models.ForeignKey(User, blank=True, null=True)
-    
+
     def __unicode__(self):
         return self.tipo
 
@@ -408,7 +408,18 @@ class mail(models.Model):
                 html_content = template_html.render(Context(ast.literal_eval(self.context)))
             else:
                 html_content = self.body
-            msg_email = EmailMultiAlternatives(self.subject, html_content, EMAIL_DEFAULT, [self.send_to.email, ])
+
+            headers = {}
+            if EMAIL_HEADERS:
+                headers = EMAIL_HEADERS
+
+            msg_email = EmailMultiAlternatives(
+                self.subject,
+                html_content,
+                EMAIL_DEFAULT,
+                [self.send_to.email, ],
+                headers = headers
+            )
             msg_email.attach_alternative(html_content,'text/html')
             msg_email.send()
             self.sended = True

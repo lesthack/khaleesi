@@ -1,0 +1,12 @@
+{% extends "base_email.html" %}
+{% block titulo%}Nota del Issue <a href="{{ URL_HOST }}/admin/track/issue/{{ nota.issue.id }}/">{{ nota.issue.id }}</a>{% endblock %}
+{% block contenido %}
+    <p>Nota por el usuario <b>{{ nota.created_by.username }} [<small>{{ nota.created_at }}</small>]</b></p>
+    <div class="nota" style="margin-top: 10px; margin-left: 10px;">
+        <p>{{ nota.nota|safe|linebreaks }}</p>
+    </div>
+    <p style="padding: 10px; text-align: center;">
+    <a href="{{ URL_HOST }}/admin/track/issue/{{ nota.issue.id }}/" class="btn-primary">Ver Detalles</a>
+    </p>
+    <hr/>
+{% endblock %}

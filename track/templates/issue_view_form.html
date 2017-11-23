@@ -81,9 +81,9 @@
         </div>
     </div>
     {% endif %}
-    {% if not adminform.form.instance.is_closed %}
     <fieldset class="module aligned first">
-      <h2>Notas</h2>
+    <h2>Notas</h2>
+    {% if not adminform.form.instance.is_closed %}
       <div class="control-group form-row field-nota ">
         <div>
             <div class="control-label">
@@ -136,34 +136,22 @@
       <div class="control-group form-row field-like ">
           <div><div class="control-label"><label class="vCheckboxLabel" for="id_like">Like</label></div><div class="controls"><input id="id_like" name="like" type="checkbox"></div></div>
       </div>
-    </fieldset>
     {% endif %}
     <hr/>
     <div id="notas">
     {% for issue_nota in adminform.form.instance.get_notas %}
-    <fieldset class="module aligned first" >
-        <h2>Notas</h2>
-        <div class="control-group form-row field-modulo ">
-            <div>
-                <div class="control-label">
-                    <label>Created by:</label>
-                </div>
-                <div class="controls">
-                    <span class="readonly">{{ issue_nota.created_by.username }}</span>
-                </div>
+        <div class="module aligned first" style="padding-left: 15px; border-bottom: 1px solid #DDD;">
+            <div class="created_by">
+                <b>{{ issue_nota.created_by.first_name }} {{ issue_nota.created_by.last_name }}</b>
+                <small>[{{ issue_nota.created_at }}]</small>:
             </div>
-            <div>
-                <div class="control-label">
-                    <label>Nota:</label>
-                </div>
-                <div class="controls">
-                    <span class="readonly">{{ issue_nota.nota|safe|linebreaks }}</span>
-                </div>
+            <div class="nota" style="margin-top: 10px; margin-left: 10px;">
+                {{ issue_nota.nota|safe|linebreaks }}
             </div>
         </div>
-    </fieldset>
     {% endfor %}
     </div>
+    </fieldset>
 <script>
     {% if not user.is_superuser %}
         $(".field-descripcion").hide();

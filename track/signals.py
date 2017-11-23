@@ -6,6 +6,32 @@ from khaleesi.settings import URL_HOST
 from django.contrib.auth.models import User
 from track.models import *
 
+@receiver(post_save, sender=issue_nota)
+def send_nota(sender, instance, **kwrags):
+    item_issue = instance.issue
+    subject = u'Khaleesi: Nota {0} {1} {2}'.format(item_issue.tipo_issue, item_issue.id, item_issue.get_status())
+    to = None
+
+    # Si sigue abierto
+    if item_issue.status == 0:
+        if item_issue.created_by == instance.created_by:
+            to = item_issue.asignado_a
+        else:
+            to = item_issue.created_by
+
+        c = Context({
+            'nota': instance,
+            'URL_HOST': URL_HOST
+        })
+        template_html = get_template('base_email_nota.html')
+        html_content = template_html.render(c)
+
+        new_mail = mail()
+        new_mail.subject = subject
+        new_mail.body = html_content
+        new_mail.send_to = to
+        new_mail.save()
+
 @receiver(post_save, sender=issue)
 def send_update(sender, instance, **kwargs):
     subject = u'Khaleesi: {0} {1} {2}'.format(instance.tipo_issue, instance.id, instance.get_status())
@@ -36,7 +62,7 @@ def signal_post_save_tarea(sender, instance, **kwargs):
     subject = u'Khaleesi: {0} {1} {2}'.format("Tarea", instance.id, instance.get_status())
     to = None
 
-    if kwargs['created']: 
+    if kwargs['created']:
         new_pizarron = pizarron(tarea=instance, created_by=instance.created_by)
 
         to = instance.created_by
@@ -51,7 +77,7 @@ def signal_post_save_tarea(sender, instance, **kwargs):
     else:
         if instance.get_last_status_number > 3:
             to = instance.created_by
-    
+
     if to:
         c = Context({
             'tarea': instance,
