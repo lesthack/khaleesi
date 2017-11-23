@@ -18,7 +18,7 @@ class proyectoAdmin(nModelAdmin):
     list_display_links = ['proyecto']
     list_display_mobile = ['proyecto', 'link_short', 'activos', 'cancelados']
     search_fields = ['proyecto', 'link', 'descripcion', 'created_by__username']
-    list_filter = ['created_at', 'updated_at', 'deleted']
+    list_filter = ['created_at', 'updated_at', 'archived']
     form = proyectoForm
     actions_on_bottom = True
     actions_on_top = False
@@ -62,7 +62,7 @@ class moduloAdmin(nModelAdmin):
     list_display_links = ['modulo']
     list_display_mobile = ['modulo', 'proyecto_link', 'issues_abiertos']
     search_fields = ['modulo', 'descripcion', 'created_by__username', 'deleted', 'deleted_by__username']
-    list_filter = ['proyecto__proyecto', 'created_at','updated_at', 'deleted']
+    list_filter = ['proyecto__proyecto', 'created_at','updated_at', 'archived']
     ordering = ('proyecto__proyecto', 'modulo')
     form = moduloForm
     list_per_page = 10

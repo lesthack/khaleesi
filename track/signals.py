@@ -43,11 +43,11 @@ def send_update(sender, instance, **kwargs):
         to = instance.created_by
 
     if to:
-        c = Context({
+        c = {
             'issue': instance,
             'es_nuevo': kwargs['created'],
             'URL_HOST': URL_HOST
-        })
+        }
         template_html = get_template('base_email_issue.html')
         html_content = template_html.render(c)
 
@@ -79,11 +79,11 @@ def signal_post_save_tarea(sender, instance, **kwargs):
             to = instance.created_by
 
     if to:
-        c = Context({
+        c = {
             'tarea': instance,
             'es_nuevo': kwargs['created'],
             'URL_HOST': URL_HOST
-        })
+        }
         template_html = get_template('base_email_tarea.html')
         html_content = template_html.render(c)
 

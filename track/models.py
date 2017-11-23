@@ -40,6 +40,7 @@ class proyecto(models.Model):
     deleted = models.BooleanField(default=False)
     deleted_by = models.ForeignKey(User, blank=True, null=True, default=None, related_name='proyecto_deleted_by')
     deleted_at = models.DateTimeField(blank=True, null=True, default=None)
+    archived = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.proyecto
@@ -71,6 +72,7 @@ class modulo(models.Model):
     deleted = models.BooleanField(default=False)
     deleted_by = models.ForeignKey(User, blank=True, null=True, default=None, related_name='modulo_deleted_by')
     deleted_at = models.DateTimeField(blank=True, null=True, default=None)
+    archived = models.BooleanField(default=False)
 
     def __unicode__(self):
         return u'{0}->{1}'.format(self.proyecto, self.modulo)

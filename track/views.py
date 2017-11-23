@@ -4,7 +4,10 @@ from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.views.decorators.csrf import csrf_protect
 from django.core.exceptions import PermissionDenied
+from django.db import connection, transaction
+from django.utils.html import escape
 from track.models import *
+from control.models import *
 from khaleesi.forms import UserProfileForm
 from datetime import datetime
 
@@ -190,6 +193,52 @@ def gantt_por_usuario_proyecto(request, user_id, proyecto_id):
 def gantt_all(request):
     proyectos = generate_gantt_filter(terminadas=True)
     return render(request, 'gantt.html', {'proyectos': proyectos})
+
+def view_xml(request, intoken, v=None):
+    cursor = connection.cursor()
+    query = None
+
+    try:
+        view_token = token.objects.get(token=intoken)
+        user = view_token.user
+        view_sqlview = sqlview.objects.get(sql_name=v, group__in=user.groups.all(), enable=True)
+        query = "SELECT * FROM {};".format(v)
+    except token.DoesNotExist:
+        print 'Invalid Token'
+    except sqlview.DoesNotExist:
+        print 'SQLView not found'
+    except Exception as e:
+        print 'Error: ', e
+
+    xmlstr = u''
+    if query:
+        try:
+            xmlstr = u'<{} xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">'.format(v)
+            cursor.execute(query)
+            row = cursor.fetchone()
+            columns = cursor.description
+            while(row!=None):
+                i = 0
+                xmlstr += '<row>'
+                for column in columns:
+                    if type(row[i]) is str or type(row[i]) is unicode:
+                        val = escape(row[i].encode('utf8'))
+                    else:
+                        val = row[i]
+                    xmlstr += u'<{column_name}>{value}</{column_name}>'.format(column_name=column[0].decode('utf8'), value=val)
+                    i += 1
+                xmlstr += u'</row>'
+                row = cursor.fetchone()
+            xmlstr += u'</{}>'.format(v)
+
+            new_uses_view = uses_view(user=user, sqlview=view_sqlview)
+            new_uses_view.save()
+        finally:
+            cursor.close()
+
+    response = HttpResponse(xmlstr, content_type="text/xml")
+    response['Content-Disposition'] = 'filename="{}.xml"'.format(v)
+    return response
 
 def board(request, tarea_id, status_id):
     redirect_response = '/admin/track/tarea/{0}/'.format(tarea_id)

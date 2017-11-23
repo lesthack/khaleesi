@@ -34,8 +34,9 @@ INSTALLED_APPS = [
     'django_extensions',
     'django_crontab',
     #'tastypie',
-    'changelog',
-    'track',
+    'control.apps.ControlConfig',
+    'changelog.apps.ChangelogConfig',
+    'track.apps.TrackConfig',
 ]
 
 MIDDLEWARE = [
@@ -138,7 +139,9 @@ JET_SIDE_MENU_ITEMS = [
         'items': [
             {'name': 'track.proyecto'},
             {'name': 'track.modulo'},
-            {'name': 'track.cita'}
+            {'name': 'track.cita'},
+            {'name': 'control.token'},
+            {'name': 'control.sqlview'}
         ]
     },
     {
