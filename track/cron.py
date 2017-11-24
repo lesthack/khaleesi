@@ -82,8 +82,8 @@ def mail_reader():
 
             AddLabelToMessage(gmail_service, user_id, message_id, labels['khaleesi-readed'])
         except:
-            AddLabelToMessage(gmail_service, user_id, message_id, labels['khaleesi-error'])
-            print '\n\tError: \n', traceback.format_exc()
+            print 'Error: \n', traceback.format_exc()
+            AddLabelToMessage(gmail_service, user_id, message_id, labels['khaleesi-error'])            
 
         RemoveLabelToMessage(gmail_service, user_id,  message_id, labels['khaleesi-unread'])
         RemoveLabelToMessage(gmail_service, user_id,  message_id, labels['UNREAD'])
@@ -118,7 +118,6 @@ def mail_daily():
     return True
 
 def mail_sending():
-    mail_reader()
     emails_to_send = mail.objects.filter(sended=False,error=False)
     for item in emails_to_send:
         item.send()
@@ -129,9 +128,10 @@ def get_url_image():
     try:
         data = json.load(urllib2.urlopen(meme_api_url))
         imageUrl = data['result'][random.randint(0,23)]['imageUrl']
-        print imageUrl
+        #print imageUrl
     except Exception as e:
-        print 'Error: ', e
+        #print 'Error: ', e
+        pass
     return imageUrl
 
 def pausetask_listening():
@@ -178,7 +178,7 @@ def pushbullet_listening():
     for profile in UserProfile.objects.filter(Q(**{day_of_week: True}) & Q(token__isnull=False)):
         try:
             pb = Pushbullet(profile.token)
-            print profile.user
+            #print profile.user
             for notification in list_notifications.keys():
                 if UserProfile.objects.filter(id=profile.id).filter(Q(**list_notifications[notification]['filter'])).count() > 0:
                     if list_notifications[notification]['type'] == 'note':
@@ -189,4 +189,5 @@ def pushbullet_listening():
                         push = pb.push_file(file_url=get_url_image(), file_name=title, file_type='image/jpeg', body=list_notifications[notification]['text'])
                     print push
         except Exception as e:
-            print 'Error: ', e
+            #print 'Error: ', e
+            pass
