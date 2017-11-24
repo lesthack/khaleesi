@@ -1,7 +1,9 @@
 {% extends "admin/change_form.html" %}
 {% block after_field_sets %}
-<script src="/static/js/advanced.js"></script>
-<script src="/static/js/wysihtml5-0.3.0.min.js"></script>
+{% load static %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="{% static 'js/advanced.js' %}"></script>
+<script src="{% static 'js/wysihtml5-0.3.0.min.js' %}"></script>
 <style>
   .wysihtml5-command-active {
     font-weight: bold;
@@ -32,7 +34,7 @@
         <div class="control-group form-row field-descripcion-2 ">
             <div>
                 <div class="control-label">
-                    <label>Descripcion:</label>
+                    <p><b>Descripcion:</b></p>
                 </div>
                 <div class="controls">
                     {{ adminform.form.instance.descripcion|safe|linebreaks }}
@@ -87,7 +89,7 @@
       <div class="control-group form-row field-nota ">
         <div>
             <div class="control-label">
-                <label class="required" for="id_nota">Nota:</label>
+                <p class="required" for="id_nota"><b>Nota:</b></p>
             </div>
             <div class="controls">
                 <div id="toolbar_nota" style="display: none;">

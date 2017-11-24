@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.conf.urls import url, include
+from django.conf.urls.static import static
 from django.core.urlresolvers import reverse
 from django.views.generic.base import RedirectView
 from django.contrib.admin import site
@@ -31,4 +33,4 @@ urlpatterns = [
     url(r'^admin/track/tarea/(?P<tarea_id>\d+)/change/board/(?P<status_id>\d+)/$', site.admin_view(board)),
     url(r'^jet/', include('jet.urls', 'jet')),
     url(r'^admin/', admin.site.urls),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
