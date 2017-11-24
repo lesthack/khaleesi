@@ -155,6 +155,7 @@
     </div>
     </fieldset>
 <script>
+  $(function(){
     {% if not user.is_superuser %}
         $(".field-descripcion").hide();
     {% else %}
@@ -166,11 +167,12 @@
           parserRules:  wysihtml5ParserRules // defined in parser rules set
         });
     {% endif %}
-	var editor = new wysihtml5.Editor("id_nota", {
-	  toolbar:      "toolbar_nota", // id of toolbar element
-	  stylesheets: "/static/css/stylesheet.css",
-	  parserRules:  wysihtml5ParserRules // defined in parser rules set
-	});
+    var editor = new wysihtml5.Editor("id_nota", {
+      toolbar:      "toolbar_nota", // id of toolbar element
+      stylesheets: "/static/css/stylesheet.css",
+      parserRules:  wysihtml5ParserRules // defined in parser rules set
+    });
+  });
 </script>
 {% endif %}
 {% endblock %}

@@ -1,33 +1,33 @@
 {% extends "admin/change_form.html" %}
-{% comment %}
 {% block after_field_sets %}
 {% load static %}
-<script src="{% static "js/advanced.js" %}"></script>
-<script src="{% static "js/wysihtml5-0.3.0.min.js" %}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="{% static 'js/advanced.js' %}"></script>
+<script src="{% static 'js/wysihtml5-0.3.0.min.js' %}"></script>
 <style>
   .wysihtml5-command-active {
     font-weight: bold;
   }
-  
+
   [data-wysihtml5-dialog] {
     margin: 5px 0 0;
     padding: 5px;
     border: 1px solid #666;
   }
-  
+
   a[data-wysihtml5-command-value="red"] {
     color: red;
   }
-  
+
   a[data-wysihtml5-command-value="green"] {
     color: green;
   }
-  
+
   a[data-wysihtml5-command-value="blue"] {
     color: blue;
   }
 </style>
-<div id="toolbar" style="display: none;">
+<div id="toolbar_desc" style="display: none; clear: both;">
     <a data-wysihtml5-command="bold" title="CTRL+B">bold</a> |
     <a data-wysihtml5-command="italic" title="CTRL+I">italic</a> |
     <a data-wysihtml5-command="createLink">insert link</a> |
@@ -67,13 +67,13 @@
     </div>  
 </div>
 <script>
-    $("#id_descripcion").css('width','90%').before($("#toolbar"));
-
-	var editor = new wysihtml5.Editor("id_descripcion", { 
-	  toolbar:      "toolbar", // id of toolbar element
-	  stylesheets: "/static/css/stylesheet.css",
-	  parserRules:  wysihtml5ParserRules // defined in parser rules set 
-	});
+  $(function(){
+    $("#id_descripcion").css('width','90%').before($("#toolbar_desc"));
+    var editor = new wysihtml5.Editor("id_descripcion", { 
+      toolbar:      "toolbar_desc", // id of toolbar element
+      stylesheets: "/static/css/stylesheet.css",
+      parserRules:  wysihtml5ParserRules // defined in parser rules set 
+    });
+  });
 </script>
 {% endblock %}
-{% endcomment %}
