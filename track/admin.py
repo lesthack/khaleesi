@@ -245,7 +245,7 @@ class issueAdmin(nModelAdmin):
     list_display_links = ['id', 'get_descripcion']
     list_display_mobile = ['id', 'get_descripcion']
     search_fields = ['id', 'modulo__proyecto__proyecto', 'modulo__modulo', 'tipo_issue__tipo', 'status', 'urgencia', 'importancia', 'asignado_a__username', 'created_by__username', 'updated_by__username']
-    ordering = ['status', '-urgencia','-importancia','-created_at']
+    ordering = ['-created_at','status', '-urgencia','-importancia']
     list_filter = ['modulo__proyecto__proyecto', 'status', 'asignado_a', 'created_by', 'created_at']
     list_per_page = 10
     form = issueForm
