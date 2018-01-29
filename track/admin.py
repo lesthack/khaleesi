@@ -311,10 +311,13 @@ class issueAdmin(nModelAdmin):
 
     def changelist_view(self, request, extra_context=None):
         q = request.GET.copy()
-        if not request.GET.has_key('status__exact'):
-            q['status__exact'] = '0'            
-        if not request.GET.has_key('asignado_a__id__exact'):
+        if request.GET.__len__() == 0:
+            q['status__exact'] = '0'
             q['asignado_a__id__exact'] = '{}'.format(request.user.id)
+        #if not request.GET.has_key('status__exact'):
+        #    q['status__exact'] = '0'
+        #if not request.GET.has_key('asignado_a__id__exact'):
+        #    q['asignado_a__id__exact'] = '{}'.format(request.user.id)
         request.GET = q
         request.META['QUERY_STRING'] = request.GET.urlencode()
         return super(issueAdmin,self).changelist_view(request, extra_context=extra_context)
