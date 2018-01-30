@@ -360,6 +360,31 @@ class citaAdmin(nModelAdmin):
 
         return False
 
+class mailForm(forms.ModelForm):
+
+    class Meta:
+        model = mail
+        exclude = ['created_by', 'created_at', 'updated_at', 'body']
+
+@admin.register(mail)
+class mailAdmin(nModelAdmin):
+    list_display = ['id', 'subject', 'get_email', 'status', 'created_at', 'sent_at']
+    list_display_links = ['id']
+    list_display_mobile = ['id', 'subject', 'sended']
+    search_fields = ['id', 'send_to__username', 'send_to__email', 'subject', 'body']
+    ordering = ['-created_at', '-updated_at']
+    list_filter = ['send_to__username', 'sended', 'error', 'created_at', 'updated_at']
+    list_per_page = 50
+    form = mailForm
+
+    def get_readonly_fields(self, request, obj=None):
+        readonly_fields = []
+        if obj:
+            self.actions = None
+            self.exclude = ()
+            readonly_fields = ('subject', 'body', 'context', 'template', 'send_to', 'sended', 'error', 'error_description', 'created_by', 'created_at', 'updated_at')
+        return self.readonly_fields + readonly_fields
+
 class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False

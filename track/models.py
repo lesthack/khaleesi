@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.html import format_html
 from django.utils.html import strip_tags
+from django.utils.translation import gettext as _
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import get_template
 from django.template import Context
@@ -430,6 +431,30 @@ class mail(models.Model):
             self.error = True
             self.error_description = 'the error %s' % (str(e))
         self.save()
+    
+    def status(self):
+        if self.sended:
+            return _('Sent')
+        if self.error:
+            return _('Fail')     
+        return _('In Process')
+    status.short_description = _('Status')
+    status.allow_tags = True
+    status.admin_order_field = 'sended'
+
+    def get_email(self):
+        return self.send_to.email
+    get_email.short_description = _('Send To')
+    get_email.allow_tags = True
+    get_email.admin_order_field = 'send_to'
+
+    def sent_at(self):
+        if self.sended:
+            return self.updated_at
+        return ''
+    sent_at.short_description = _('Sent At')
+    sent_at.allow_tags = True
+    sent_at.admin_order_field = 'updated_at'
 
 class cita(models.Model):
     descripcion = models.TextField()
