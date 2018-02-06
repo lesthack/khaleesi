@@ -3,7 +3,12 @@
 {% block contenido %}
     <p>Nota por el usuario <b>{{ nota.created_by.username }} [<small>{{ nota.created_at }}</small>]</b></p>
     <div class="nota" style="margin-top: 10px; margin-left: 10px;">
-        <p>{{ nota.nota|safe|linebreaks }}</p>
+      <div style="display: inline-block; width: 30px;">
+        {% if nota.like == '1' %}&#x1f44d;{% endif %}
+      </div>
+      <div style="display: inline-block;">
+          {{ nota.nota|safe|linebreaks }}
+      </div>
     </div>
     <p style="padding: 10px; text-align: center;">
     <a href="{{ URL_HOST }}/admin/track/issue/{{ nota.issue.id }}/" class="btn-primary">Ver Detalles</a>

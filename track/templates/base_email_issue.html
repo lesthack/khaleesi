@@ -34,7 +34,12 @@
             {% for nota in issue.get_notas %}
             <div class="nota" style="margin-top: 10px; margin-bottom: 5px;">
                 <p>Nota por el usuario <b>{{ nota.created_by.username }} [<small>{{ nota.created_at }}</small>]</b></p>
-                <div style="margin-left: 10px;">{{ nota.nota|safe|linebreaks }}</div>
+                <div style="display: inline-block; width: 30px;">
+                  {% if nota.like %}&#x1f44d;{% endif %}
+                </div>
+                <div style="display: inline-block;margin-left: 10px;">
+                  {{ nota.nota|safe|linebreaks }}
+                </div>
             </div>
             {% endfor %}
         </div>

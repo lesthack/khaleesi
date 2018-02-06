@@ -135,12 +135,34 @@
             </div>
         </div>
       </div>
-      <div class="control-group form-row field-like ">
-          <div><div class="control-label"><label class="vCheckboxLabel" for="id_like">Like</label></div><div class="controls"><input id="id_like" name="like" type="checkbox"></div></div>
+      <div class="control-group form-row field-like">
+        <div class="controls">
+          <span style="font-size: 30px; color: #CCC; cursor: pointer;" id="check_like">
+            <i class="far fa-thumbs-up"></i>
+          </span>
+          <input id="id_like" name="like" type="hidden" value="0" />
+          <script>
+            $(function(){
+              $("#check_like").click(function(){
+                var me = $(this);
+                if(me.hasClass('like')){
+                  me.removeClass('like');
+                  me.css('color','#CCC');
+                  $("#id_like").val(0);
+                }
+                else{
+                  me.addClass('like');
+                  me.css('color','blue');
+                  $("#id_like").val(1);
+                }
+              });
+            })
+          </script>
+        </div>
       </div>
     {% endif %}
     <hr/>
-    <div id="notas">
+    <div id="notas" style="margin-top: 20px;">
     {% for issue_nota in adminform.form.instance.get_notas %}
         <div class="module aligned first" style="padding-left: 15px; border-bottom: 1px solid #DDD;">
             <div class="created_by">
@@ -148,6 +170,9 @@
                 <small>[{{ issue_nota.created_at }}]</small>:
             </div>
             <div class="nota" style="margin-top: 10px; margin-left: 10px;">
+                {% if issue_nota.like %}
+                <i class="far fa-thumbs-up" style="color: blue; float: left; margin-left: -10px;"></i>
+                {% endif %}
                 {{ issue_nota.nota|safe|linebreaks }}
             </div>
         </div>
