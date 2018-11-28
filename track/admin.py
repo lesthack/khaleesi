@@ -120,7 +120,7 @@ class tareaAdmin(nModelAdmin):
     list_filter = ['modulo__proyecto__proyecto', 'status', 'responsable', 'fecha_inicial', 'fecha_final']
     actions = None
     form = tareaForm
-    list_per_page = 10
+    list_per_page = 20
 
     def admin_horas_reales(self, obj):
         return '%.2f' % round(obj.get_horas_reales(), 2)
